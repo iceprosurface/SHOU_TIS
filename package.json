@@ -7,7 +7,9 @@
   "homepage": "",
   "author": "icepro",
   "dependencies": {
+    "cookie-parser": "^1.4.3",
     "express": "^4.14.0",
+    "express-session": "^1.14.2",
     "mongodb": "^2.2.11",
     "mongoose": "^4.6.5",
     "strip-ansi": "^3.0.1"
