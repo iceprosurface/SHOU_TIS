@@ -31,6 +31,10 @@ module.exports = function(parent, options) {
                     method = 'put';
                     path = '/' + name + '/:' + name + '_id';
                     break;
+                case 'delete':
+                    method = 'delete';
+                    path = '/' + name + '/:' + name + '_id';
+                    break;
                 case 'create':
                     method = 'post';
                     path = '/' + name;
