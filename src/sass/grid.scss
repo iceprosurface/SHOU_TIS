@@ -1,0 +1,41 @@
+@mixin grid() {
+    @for $i from 1 through 12 {
+        .col-#{$i} {
+            width: (($i * 1 / 12) * 100%);
+            float: left;
+        }
+    }
+}
+
+@mixin clearFix {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+* {
+    padding: 0px;
+    margin: 0px;
+}
+
+div {
+    position: relative;
+}
+
+
+.grid {
+    margin: rem(8);
+    .row {
+        width: 100%;
+        box-sizing: border-box;
+        &:after,
+        &:before {
+            @include clearFix();
+        }
+    }
+}
+//@media screen and (min-width: 769px) {
+    .grid .row {
+        @include grid();
+    }
+//}
