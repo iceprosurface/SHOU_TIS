@@ -46,4 +46,6 @@ app.use(function(err, req, res, next) {
 app.use(function(req, res, next) {
     res.status(404).send("file or api not find in server and path is : " + req.originalUrl);
 });
+
 app.listen(8888);
+console.log('listen on 8888 port');

@@ -1,5 +1,6 @@
 // gulpfile.js
 var gulp = require('gulp');
+var gls = require('gulp-live-server');
 var proxy = require("http-proxy-middleware");
 var sass = require('gulp-sass');
 //如果需要可以生成sourcemap
@@ -104,7 +105,7 @@ gulp.task('script-watch', ['script'], reload);
 // gulp.task('html-watch', ['html'], reload);
 
 // 静态服务器
-gulp.task('server', ['html', 'sass', 'script', 'css'], function() {
+gulp.task('server', ['html', 'sass', 'script', 'css','serve'], function() {
     // 从这个项目的根目录启动服务器
     browserSync.init({
 		proxy: "localhost:8888",  // local node app address
@@ -114,7 +115,6 @@ gulp.task('server', ['html', 'sass', 'script', 'css'], function() {
 		ui: false,
 		index: 'index.html'
     });
-
     // 添加 browserSync.reload 到任务队列里
     // 所有的浏览器重载后任务完成。
     watch("src/sass/**/*.scss", function() { //监听所有sass
@@ -129,6 +129,17 @@ gulp.task('server', ['html', 'sass', 'script', 'css'], function() {
     watch("src/css/**/*.css", function() { //监听所有css
         gulp.start('css'); //出现修改、立马执行css任务
     });
+});
+
+gulp.task('serve', function() {
+    var server = gls.new('./server/index.js',{env: {NODE_ENV: 'development'}});
+	server.start().then(function(result) {
+        console.log('Server exited with result:', result);
+    });
+	watch('./server/**/*.js', function (file) {
+      server.start.apply(server);
+      server.notify.apply(server, [file]);
+    })
 });
 
 gulp.task('watch', function() {
