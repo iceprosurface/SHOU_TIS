@@ -65,7 +65,7 @@ gulp.task('css', function() {
         .pipe(reload({ stream: true }));
 });
 gulp.task('html', function() {
-    gulp.src(["src/**/*.html", "!src/public/*.html"])
+    gulp.src("src/**/*.html")
         .pipe(fileinclude())
         .on('error', function(err) {
             gutil.log('html Error!', err.message);
