@@ -2,3 +2,9 @@
 @import 'grid';
 @import 'base';
 @import 'siderbar';
+@import 'loading';
+//boot的圆角去除
+.nav {
+
+    border-radius: 4px;
+}
