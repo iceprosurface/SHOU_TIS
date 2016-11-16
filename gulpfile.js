@@ -109,7 +109,8 @@ gulp.task('html', function() {
 });
 gulp.task('script', function() {
     return watchify(browserify({
-            entries: ["./src/js/main.jsx"],
+            //entries: ["./src/js/main.jsx"],
+            entries: ["./src/js/test.jsx"],
         }))
         .transform(babelify, {
             presets: ["es2015", "react"],

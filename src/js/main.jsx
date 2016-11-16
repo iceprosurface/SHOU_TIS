@@ -1,3 +1,7 @@
+/**************************
+ * *@author icepro
+ * @time 2016/11/6 18:44:33 +UTC 08:00
+ * ****************************/
 import React from 'react'
 import {
     render
@@ -19,7 +23,7 @@ import {
     NavDropdown,
 } from "react-Bootstrap";
 
-import Login from "./uil/login.jsx"
+import Login from "./components/login.jsx"
 
 const bodyCss = {
 	'marginTop': '90px'
