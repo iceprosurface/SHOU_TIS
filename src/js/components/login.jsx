@@ -1,6 +1,7 @@
 /**************************
  * *@author icepro
  * @time 2016/11/8 20:40:53 +UTC 08:00
+ * @update 2016/11/18. 16:13:35 +UTC 08:00
  * ****************************/
 import React from 'react'
 import {
@@ -12,8 +13,19 @@ import {
     ModalFooter,
     Button,
     ButtonGroup,
-    Glyphicon
+	Glyphicon,
+	Overlay
 } from "react-Bootstrap"
+import { ReactDOM } from 'react-dom'
+
+import {
+    emitTarget
+} from "../util/message.js"
+
+import {
+	status,
+	json
+} from "../util/fetchUtil.js"
 
 const wellStyles = {
     maxWidth: 400,
@@ -24,7 +36,7 @@ class InputButton extends React.Component {
         super(props);
         this.state = {
             focused: false,
-			value:props.value
+            value: props.value
         };
     }
     onblured() {
@@ -48,22 +60,25 @@ class InputButton extends React.Component {
     render() {
         let focused = this.state.focused;
         let cssTop = `input-group ${focused?'focus':''}`;
+        let inputType = this.props.type == 'psw' ? 'password' : 'text';
         return (
             <div className={cssTop}>
-			<span className="input-group-addon"><Glyphicon glyph={this.props.glyph} /></span>
-			<input type="text" className="form-control" name={this.props.name} placeholder={this.props.placeholder} onFocus={this.onFocused.bind(this)} onBlur={this.onblured.bind(this)} value={this.state.value} onChange={this.handleChange.bind(this)}	/>
-		</div>)
+				<span className="input-group-addon"><Glyphicon glyph={this.props.glyph} /></span>
+				<input type={inputType} className="form-control" name={this.props.name} placeholder={this.props.placeholder} onFocus={this.onFocused.bind(this)} onBlur={this.onblured.bind(this)} value={this.state.value} onChange={this.handleChange.bind(this)}	/>
+			</div>
+        )
     }
 }
 export default class Login extends React.Component {
     constructor(props) {
-        super(props);
+		super(props);
         this.state = {
-			showModal: false,
-			loginInfo:{
-				'usr':'',
-				'psw':'',
-			}
+			showtips: false,
+            showModal: false,
+            loginInfo: {
+                'usr': '',
+                'psw': '',
+            }
         };
     }
     close() {
@@ -71,7 +86,6 @@ export default class Login extends React.Component {
             showModal: false
         });
     }
-
     open() {
         this.setState({
             showModal: true
@@ -79,43 +93,56 @@ export default class Login extends React.Component {
     }
     inputValue(item) {
         this.setState({
-			loginInfo: Object.assign(this.state.loginInfo,item)
+            loginInfo: Object.assign(this.state.loginInfo, item)
         });
     }
+	login() {
+		var form = new FormData(this.loginForm);
+		var init = {
+			method: 'POST',
+			mode: 'cors',
+			cache: 'default',
+			body: form
+		};
+		fetch(`/usr/${form.get('usr')}/check`, init)
+			.then(status)
+			.then(json,(e)=>{
+				this.setState({ tipshow: true });
+			})
+			.then((json)=>{
+				emitTarget('logined',true, json.name);	
+			}).catch((e)=>{
+			});
+	}
+	// TODO : <icepro:2016.10.18>添加提示栏
     render() {
-        const popover = (
-            <Popover id="modal-popover" title="popover">
-        very popover. such engagement
-      </Popover>
-        );
-        const tooltip = (
-            <Tooltip id="modal-tooltip">
-        wow.
-      </Tooltip>
-        );
+		const tips = this.state.tipshow?<p>用户名或密码错误你可以再试试~</p>:'';
         return (
             <div>
 				<ButtonGroup bsStyle="primary" bsSize="large">
 					<Button bsStyle="primary" onClick={this.open.bind(this)} ><Glyphicon glyph="user" />登录</Button>
 					<Button bsStyle="primary"><Glyphicon glyph="pencil"/>注册</Button>
 				</ButtonGroup>
-        <Modal show={this.state.showModal} onHide={this.close.bind(this)}>
-          <Modal.Header>
-            <Modal.Title>登录</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-			  <div className="well" style={wellStyles}>
-				  <InputButton name="usr"  value={this.state.loginInfo.usr} glyph="user" placeholder="please" changedValue={this.inputValue.bind(this)}/>
-				<br/>
-				<InputButton name="psw"  value={this.state.loginInfo.psw} glyph="lock" placeholder="please" changedValue={this.inputValue.bind(this)}/>
-				<br/>
-				<Button bsStyle="primary" bsSize="large" block>登录</Button>
-				<Button bsStyle="primary" bsSize="large" block>忘记密码</Button>
-				<Button bsSize="large" block onClick={this.close.bind(this)}>取消</Button>
-			  </div>
-          </Modal.Body>
-        </Modal>
-      </div>
+				<Modal show={this.state.showModal} onHide={this.close.bind(this)}>
+					<Modal.Header>
+						<Modal.Title>登录</Modal.Title>
+					</Modal.Header>
+					<Modal.Body>
+						<div className="well" style={wellStyles}>
+							<form ref={(form) => this.loginForm = form }>
+								<InputButton name="usr"  value={this.state.loginInfo.usr} glyph="user" placeholder="请输入用户名" changedValue={this.inputValue.bind(this)}/>
+								<br/>
+								<InputButton name="psw" type="psw"  value={this.state.loginInfo.psw} glyph="lock" placeholder="请输入密码" changedValue={this.inputValue.bind(this)}/>
+							</form>
+							<br/>
+							{tips}
+							<Button bsStyle="primary" bsSize="large" block onClick={this.login.bind(this)} >登录</Button>
+							<Button bsStyle="primary" bsSize="large" block>忘记密码</Button>
+							<Button bsSize="large" block onClick={this.close.bind(this)}>取消</Button>
+						</div>
+					</Modal.Body>
+				</Modal>
+			</div>
         );
     }
 }

@@ -4,6 +4,7 @@
  * @update 2016/11/9. 10:54:17 +UTC 08:00
  * @update 2016/11/11. 10:54:17 +UTC 08:00
  * @update 2016/11/13. 21:52:07 +UTC 08:00
+ * @update 2016/11/18. 16:14:00 +UTC 08:00
  * ****************************/
 import React from 'react'
 import {
@@ -72,7 +73,7 @@ export class Select extends React.Component {
 		let row = [];
 		for(let i in datas){
 			row.push(
-					<option value={datas[i]}>{datas[i]}</option>
+					<option key={i} value={datas[i]}>{datas[i]}</option>
 			)
 		}
 		return (
@@ -91,3 +92,33 @@ export class Select extends React.Component {
     }
 }
 //TODO:<icepro:2016.11.13>: should add textarea and muti-select ,may should add sync file upload component
+
+export class Textarea extends React.Component {
+	render(){
+		return (
+			<FormGroup controlId={this.props.name}>
+				<Col componentClass={ControlLabel} sm={2}>
+					{this.props.label}
+				</Col>
+				<Col sm={10}>
+					<FormControl componentClass="textarea" placeholder={this.props.placeholer} />
+				</Col>
+			</FormGroup>
+		)
+	}
+}
+
+export class FileInput extends React.Component {
+	render(){
+		return (
+			<FormGroup controlId={this.props.name}>
+				<Col componentClass={ControlLabel} sm={2}>
+					{this.props.label}
+				</Col>
+				<Col sm={10}>
+					<FormControl type="file" componentClass="input"/>
+				</Col>
+			</FormGroup>
+		)
+	}
+}
