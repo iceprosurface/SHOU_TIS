@@ -19,6 +19,7 @@ export class TableParser extends React.Component {
         let row = [],
             datas = this.props.datas;
         for (let i in datas) {
+			datas[i].key = i
 			row.push(React.createElement(datas[i].elem,datas[i]))
         }
         return (
