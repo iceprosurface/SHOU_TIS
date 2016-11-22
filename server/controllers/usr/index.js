@@ -18,18 +18,18 @@ exports.show = function(req, res, next) {
         usr: {}
     };
     usr.fn.findOne({
-            name: req.usr
-        }).exec( function(err, doc) {
-			if(!err){
-				result['usr'] = doc;
-				//要在收到回执后在返回result
-				res.send(result);
+        name: req.usr
+    }).exec(function(err, doc) {
+        if (!err) {
+            result['usr'] = doc;
+            //要在收到回执后在返回result
+            res.send(result);
 
-			}else{
-				// 出现错误的处理
-				res.status(502).send('may have a server error');
-			}
-        });
+        } else {
+            // 出现错误的处理
+            res.status(502).send('may have a server error');
+        }
+    });
 };
 
 exports.create = function(req, res, next) {
@@ -41,14 +41,48 @@ exports.create = function(req, res, next) {
     oneNew.save()
         .then(function() {
                 result['response'] = 'success';
-				return result;
-			},
+                return result;
+            },
             function(err) {
                 if (err) console.log('Error on save!');
                 result['response'] = 'fails';
-				return result;
+                return result;
             })
-		.then(function(){
-			res.send(result);
-		});
+        .then(function() {
+            res.send(result);
+        });
+}
+exports.check = function(req, res, next) {
+    if (!req.body) res.status(400).send({
+        respond: 'this is not allow to input null',
+        status: 400
+    });
+    var loginInfo = {
+        name: req.params.usr_id,
+        psw: req.body.psw
+    };
+    usr.fn.findOne(loginInfo)
+        .exec((err, doc) => {
+            if (err) {
+                res.status(502).send({
+                    respond: 'there is a server error ',
+					status: 502
+                });
+				console.log(err);
+                return;
+            }
+            if (doc) {
+                //logined 
+                res.status(200).send({
+                    respond: 'this is success',
+					name:doc.name,
+					status: 200
+                });
+            } else {
+                res.status(402).send({
+                    respond: 'password or usrname error',
+					status: 402
+                });
+            }
+        });
 }

@@ -39,6 +39,10 @@ module.exports = function(parent, options) {
                     method = 'post';
                     path = '/' + name;
                     break;
+				case 'check':
+					method = 'post'
+					path = '/' + name + '/:' + name + '_id/check';
+					break;
                 case 'index':
                     method = 'get';
                     path = '/';
