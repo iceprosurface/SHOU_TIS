@@ -5,6 +5,7 @@ const express = require('express'),
 	cookieParser = require('cookie-parser'),
 	session = require('express-session'),
 	bodyParser = require('body-parser');
+const conf = require('./conf.js');
 var multer = require('multer');
 var upload = multer(); 
 //定义全局根目录
@@ -25,7 +26,8 @@ var db = require('./model/db');
 var route = require('./lib/controller');
 
 // 使用cookie代理插件
-app.use(cookieParser());
+app.use(cookieParser(conf.secret));
+console.log('now use ' + conf.cookieSecret);
 // 设置session
 app.use(session({
     secret: 'recommand 128 bytes random string',
