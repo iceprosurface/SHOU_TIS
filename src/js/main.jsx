@@ -1,3 +1,9 @@
+/**************************
+ * *@author icepro
+ * @time 2016/11/6 18:44:33 +UTC 08:00
+ * @update 2016/11/22. 10:50:06 +UTC 08:00
+ * ****************************/
+// 导入react 以及相关组件
 import React from 'react'
 import {
     render
@@ -8,7 +14,7 @@ import {
     Link,
     hashHistory
 } from 'react-router';
-
+// 导入react-bootstrap相关组件简化开发难度
 import {
     NavbarHeader,
     Navbar,
@@ -18,16 +24,68 @@ import {
     NavbarBrand,
     NavDropdown,
 } from "react-Bootstrap";
+// 导入自己写的相关组件
+import Login from "./components/login.jsx"
+// 导入监听者组件-用于响应事件的发生以回流state状态更新
+import {
+    addTargetListener
+} from "./util/message.js"
+import {
+    json
+} from "./util/fetchUtil.js"
+import {
+    fetchData
+} from "./util/ajax.js"
+import {
+    getCookie
+} from "./util/cookie.js"
 
-import Login from "./uil/login.jsx"
+import {
+    ProjectCreate,
+    ProjectList
+} from "./components/project.jsx"
 
-const bodyCss = {
-	'marginTop': '90px'
-}
 const App = React.createClass({
+    getInitialState() {
+        var state = {
+            logined: false
+        };
+        addTargetListener('logined', (value, name) => {
+            this.setState({
+                logined: value,
+                name: name
+            });
+        });
+		fetchData('tokenLogin')
+			.then(json, (e) => {
+                throw new Error('login fail')
+            })
+            .then((data) => {
+                this.setState({
+                    logined: true,
+                    name: data.name
+                });
+            }).catch((e) => {
+                console.log(e);
+            });
+        return state;
+    },
+
     render() {
+        let usrcon;
+        // 登录状态下切换显示名字
+        // TODO <icepro 2016.11.22>: 个人信息的修改选项-dropdown
+        if (!this.state.logined) {
+            usrcon = <Login />;
+        } else {
+            usrcon = <span>{this.state.name}</span>
+        }
+        // 设置一个上方的偏移，使得navbar和container有一定的距离
+        const bodyCss = {
+            'marginTop': '90px'
+        }
         return (
-			<div>
+            <div>
 				<Navbar fixedTop inverse>
 					<Navbar.Header>
 						<Navbar.Brand>
@@ -36,10 +94,14 @@ const App = React.createClass({
 					</Navbar.Header>
 					<Nav>
 						<NavItem eventKey={1} href="#/people">用户信息</NavItem>
-						<NavItem eventKey={2} href="#/project">科研项目</NavItem>
+						<NavDropdown eventKey={4} title="科研项目" id="basic-nav-dropdown">
+							<MenuItem eventKey={4.1} href="#/project/create">新建科研项目</MenuItem>
+							<MenuItem divider />
+							<MenuItem eventKey={4.2} href="#/project/list">科研项目预览</MenuItem>
+						</NavDropdown>
 					</Nav>
 					<Nav pullRight>
-						<NavItem eventKey={3} href="#"><Login /></NavItem>
+						<NavItem eventKey={3} href="#">{usrcon}</NavItem>
 					</Nav>
 				</Navbar>
 				<div className="container" style={bodyCss}>{this.props.children}</div>
@@ -48,12 +110,20 @@ const App = React.createClass({
     }
 })
 const Project = React.createClass({
+    // 仅仅做测试
     render() {
-        return <h3>this is a project</h3>
+        return (
+            <div> 
+				<h3>科研项目管理</h3>
+				<hr/>
+				{this.props.children} 
+			</div>
+        );
     }
 })
 
 const People = React.createClass({
+    // 仅仅做测试
     render() {
         return (
             <div>
@@ -68,6 +138,8 @@ render((
 		<Route path="/" component={App}>
 		  <Route path="people" component={People} />
 		  <Route path="project" component={Project}>
+			  <Route path="create" component={ProjectCreate}/>
+			  <Route path="list" component={ProjectList}/>
 		  </Route>
 		</Route>
 	</Router>

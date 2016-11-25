@@ -1,24 +1,33 @@
 // 导入依赖
 const express = require('express'),
-    path = require('path'),
-    serveStatic = require('serve-static'),
-    cookieParser = require('cookie-parser'),
-    session = require('express-session');
+	path = require('path'),
+	serveStatic = require('serve-static'),
+	cookieParser = require('cookie-parser'),
+	session = require('express-session'),
+	bodyParser = require('body-parser');
+const conf = require('./conf.js');
+var multer = require('multer');
+var upload = multer(); 
 //定义全局根目录
 global.APP_PATH = __dirname + '/';
 
-// 导入数据库连接
-var db = require('./model/db');
-// 导入自动化controller
-var route = require('./lib/controller');
 // 实例化experess,同时输出文件到express
 var app = module.exports = express();
 // 代理静态资源
 app.use(serveStatic(__dirname + '/../dest'));
+// 使用bodyparse 使得form-data可以被解析
+// 要在route前导入
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json({ type: 'application/*+json' }))
+app.use(upload.array()); // for parsing multipart/form-data
+// 导入数据库连接
+var db = require('./model/db');
+// 导入自动化controller
+var route = require('./lib/controller');
 
 // 使用cookie代理插件
-app.use(cookieParser());
-
+app.use(cookieParser(conf.secret));
+console.log('now use ' + conf.cookieSecret);
 // 设置session
 app.use(session({
     secret: 'recommand 128 bytes random string',
