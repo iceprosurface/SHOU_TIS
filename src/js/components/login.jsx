@@ -13,18 +13,22 @@ import {
     ModalFooter,
     Button,
     ButtonGroup,
-	Glyphicon,
-	Overlay
+    Glyphicon,
+    Overlay
 } from "react-Bootstrap"
-import { ReactDOM } from 'react-dom'
+import {
+    ReactDOM
+} from 'react-dom'
 
 import {
     emitTarget
 } from "../util/message.js"
-
 import {
-	status,
-	json
+	fetchData
+} from "../util/ajax.js"
+import {
+    json,
+    status
 } from "../util/fetchUtil.js"
 
 const wellStyles = {
@@ -71,9 +75,9 @@ class InputButton extends React.Component {
 }
 export default class Login extends React.Component {
     constructor(props) {
-		super(props);
+        super(props);
         this.state = {
-			showtips: false,
+            showtips: false,
             showModal: false,
             loginInfo: {
                 'usr': '',
@@ -96,27 +100,22 @@ export default class Login extends React.Component {
             loginInfo: Object.assign(this.state.loginInfo, item)
         });
     }
-	login() {
+    login() {
 		var form = new FormData(this.loginForm);
-		var init = {
-			method: 'POST',
-			mode: 'cors',
-			cache: 'default',
-			body: form
-		};
-		fetch(`/usr/${form.get('usr')}/check`, init)
-			.then(status)
-			.then(json,(e)=>{
-				this.setState({ tipshow: true });
-			})
-			.then((json)=>{
-				emitTarget('logined',true, json.name);	
-			}).catch((e)=>{
+		fetchData('login',{body:form}).then(json, (e) => {
+			this.setState({
+				tipshow: true
 			});
+			return Promise.reject();
+		})
+			.then((data) => {
+				// 呼叫事件表达目前已经登录
+				emitTarget('logined', true, data.name);
+			}).catch(function(e) {});
 	}
 	// TODO : <icepro:2016.10.18>添加提示栏
     render() {
-		const tips = this.state.tipshow?<p>用户名或密码错误你可以再试试~</p>:'';
+        const tips = this.state.tipshow ? <p>用户名或密码错误你可以再试试~</p> : '';
         return (
             <div>
 				<ButtonGroup bsStyle="primary" bsSize="large">

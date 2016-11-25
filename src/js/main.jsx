@@ -30,35 +30,60 @@ import Login from "./components/login.jsx"
 import {
     addTargetListener
 } from "./util/message.js"
+import {
+    json
+} from "./util/fetchUtil.js"
+import {
+    fetchData
+} from "./util/ajax.js"
+import {
+    getCookie
+} from "./util/cookie.js"
 
 import {
-	getCookie
-} from "./util/cookie.js"
+    ProjectCreate,
+    ProjectList
+} from "./components/project.jsx"
 
 const App = React.createClass({
     getInitialState() {
-		var state = {
-			logined :false
+        var state = {
+            logined: false
         };
-        addTargetListener('logined', (value,name) => {
-			this.setState({logined:value,name:name});
+        addTargetListener('logined', (value, name) => {
+            this.setState({
+                logined: value,
+                name: name
+            });
         });
-		return  state;
-	},
+		fetchData('tokenLogin')
+			.then(json, (e) => {
+                throw new Error('login fail')
+            })
+            .then((data) => {
+                this.setState({
+                    logined: true,
+                    name: data.name
+                });
+            }).catch((e) => {
+                console.log(e);
+            });
+        return state;
+    },
 
     render() {
-        let usrcon ;
-		// 登录状态下切换显示名字
-		// TODO <icepro 2016.11.22>: 个人信息的修改选项-dropdown
-		if(!this.state.logined){
-			usrcon=<Login />;
-		}else{
-			usrcon = <span>{this.state.name}</span>
-		}
-		// 设置一个上方的偏移，使得navbar和container有一定的距离
-		const bodyCss = {
-			'marginTop': '90px'
-		}
+        let usrcon;
+        // 登录状态下切换显示名字
+        // TODO <icepro 2016.11.22>: 个人信息的修改选项-dropdown
+        if (!this.state.logined) {
+            usrcon = <Login />;
+        } else {
+            usrcon = <span>{this.state.name}</span>
+        }
+        // 设置一个上方的偏移，使得navbar和container有一定的距离
+        const bodyCss = {
+            'marginTop': '90px'
+        }
         return (
             <div>
 				<Navbar fixedTop inverse>
@@ -69,7 +94,11 @@ const App = React.createClass({
 					</Navbar.Header>
 					<Nav>
 						<NavItem eventKey={1} href="#/people">用户信息</NavItem>
-						<NavItem eventKey={2} href="#/project">科研项目</NavItem>
+						<NavDropdown eventKey={4} title="科研项目" id="basic-nav-dropdown">
+							<MenuItem eventKey={4.1} href="#/project/create">新建科研项目</MenuItem>
+							<MenuItem divider />
+							<MenuItem eventKey={4.2} href="#/project/list">科研项目预览</MenuItem>
+						</NavDropdown>
 					</Nav>
 					<Nav pullRight>
 						<NavItem eventKey={3} href="#">{usrcon}</NavItem>
@@ -81,14 +110,20 @@ const App = React.createClass({
     }
 })
 const Project = React.createClass({
-	// 仅仅做测试
+    // 仅仅做测试
     render() {
-        return <h3>this is a project</h3>
+        return (
+            <div> 
+				<h3>科研项目管理</h3>
+				<hr/>
+				{this.props.children} 
+			</div>
+        );
     }
 })
 
 const People = React.createClass({
-	// 仅仅做测试
+    // 仅仅做测试
     render() {
         return (
             <div>
@@ -103,6 +138,8 @@ render((
 		<Route path="/" component={App}>
 		  <Route path="people" component={People} />
 		  <Route path="project" component={Project}>
+			  <Route path="create" component={ProjectCreate}/>
+			  <Route path="list" component={ProjectList}/>
 		  </Route>
 		</Route>
 	</Router>
