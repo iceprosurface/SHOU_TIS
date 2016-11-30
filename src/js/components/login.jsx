@@ -27,8 +27,7 @@ import {
 	fetchData
 } from "../util/ajax.js"
 import {
-    json,
-    status
+    json
 } from "../util/fetchUtil.js"
 
 const wellStyles = {
@@ -102,16 +101,20 @@ export default class Login extends React.Component {
     }
     login() {
 		var form = new FormData(this.loginForm);
-		fetchData('login',{body:form}).then(json, (e) => {
-			this.setState({
-				tipshow: true
-			});
-			return Promise.reject();
-		})
+		fetchData('login',{body:form})
+			.then(json, (e) => {
+				this.setState({
+					tipshow: true
+				});
+				return Promise.reject();
+			})
 			.then((data) => {
 				// 呼叫事件表达目前已经登录
 				emitTarget('logined', true, data.name);
 			}).catch(function(e) {});
+	}
+	openDialog() {
+		emitTarget('loadingOpen');
 	}
 	// TODO : <icepro:2016.10.18>添加提示栏
     render() {
@@ -120,7 +123,7 @@ export default class Login extends React.Component {
             <div>
 				<ButtonGroup bsStyle="primary" bsSize="large">
 					<Button bsStyle="primary" onClick={this.open.bind(this)} ><Glyphicon glyph="user" />登录</Button>
-					<Button bsStyle="primary"><Glyphicon glyph="pencil"/>注册</Button>
+					<Button bsStyle="primary" onClick={this.openDialog.bind(this)} ><Glyphicon glyph="pencil"/>注册</Button>
 				</ButtonGroup>
 				<Modal show={this.state.showModal} onHide={this.close.bind(this)}>
 					<Modal.Header>

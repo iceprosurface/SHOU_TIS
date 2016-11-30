@@ -9,7 +9,7 @@ const conf = require('./conf.js');
 var multer = require('multer');
 var upload = multer(); 
 //定义全局根目录
-global.APP_PATH = __dirname + '/';
+global.APP_PATH = __dirname;
 
 // 实例化experess,同时输出文件到express
 var app = module.exports = express();

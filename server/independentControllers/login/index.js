@@ -45,11 +45,13 @@ exports.tokenLoginCheck = {
                 console.log(err);
 				return;
             }
-        }
-        res.status(403).send({
-            respond: 'token error',
-            status: 403
-        });
+        }else{
+			res.status(403).send({
+				respond: 'no token to use',
+				status: 403
+			});
+			console.log('no token');
+		}
     }
 }
 // 登录后可以在session中访问到login.usrname以及usrObjId

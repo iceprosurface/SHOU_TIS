@@ -91,8 +91,7 @@ export class Select extends React.Component {
 
     }
 }
-//TODO:<icepro:2016.11.13>: should add textarea and muti-select ,may should add sync file upload component
-
+//TODO:<icepro:2016.11.13>: should add textarea and muti-select 
 export class Textarea extends React.Component {
 	render(){
 		return (
@@ -101,7 +100,7 @@ export class Textarea extends React.Component {
 					{this.props.label}
 				</Col>
 				<Col sm={10}>
-					<FormControl componentClass="textarea" placeholder={this.props.placeholer} />
+					<FormControl componentClass="textarea" name={this.props.name} placeholder={this.props.placeholer} />
 				</Col>
 			</FormGroup>
 		)
@@ -122,3 +121,5 @@ export class FileInput extends React.Component {
 		)
 	}
 }
+
+// TODO <icepro 2016-11-27>: 需要添加一个time的选择类型

@@ -26,6 +26,11 @@ import {
 } from "react-Bootstrap";
 // 导入自己写的相关组件
 import Login from "./components/login.jsx"
+
+import {
+	LoadingModal
+} from "./components/modal.jsx"
+
 // 导入监听者组件-用于响应事件的发生以回流state状态更新
 import {
     addTargetListener
@@ -39,7 +44,6 @@ import {
 import {
     getCookie
 } from "./util/cookie.js"
-
 import {
     ProjectCreate,
     ProjectList
@@ -58,7 +62,7 @@ const App = React.createClass({
         });
 		fetchData('tokenLogin')
 			.then(json, (e) => {
-                throw new Error('login fail')
+                throw new Error(e)
             })
             .then((data) => {
                 this.setState({
@@ -86,6 +90,7 @@ const App = React.createClass({
         }
         return (
             <div>
+				<LoadingModal />
 				<Navbar fixedTop inverse>
 					<Navbar.Header>
 						<Navbar.Brand>
@@ -126,9 +131,9 @@ const People = React.createClass({
     // 仅仅做测试
     render() {
         return (
-            <div>
+			<div>
 				<div className='uil-reload-css'><div></div></div>
-				  <h2>this is a people control</h2>
+				<h2>this is a people control</h2>
 			</div>
         )
     }
