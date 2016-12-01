@@ -80,7 +80,8 @@ exports.nomalLoginCheck = {
                 }
                 if (doc) {
                     let token = jwt.sign({
-                        usrname: doc.name
+                        usrname: doc.name,
+						age: doc.age
                     }, conf.tokenSecret);
                     //logined 
                     res.cookie('logined', token, {
