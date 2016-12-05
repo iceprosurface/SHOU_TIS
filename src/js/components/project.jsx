@@ -76,6 +76,7 @@ export class ProjectEdit extends React.Component {
 	render() {
 		return (
 			<div>
+				
 			</div>
 		);
 	}
@@ -88,5 +89,4 @@ export class ProjectList extends React.Component {
 			</div>
         )
     }
-
 }

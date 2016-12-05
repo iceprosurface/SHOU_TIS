@@ -1,4 +1,19 @@
 var listener = {};
+var warning = false;
+// 获得某个指定名称的listener
+var getListener = function(name){
+	return listener[name];
+}
+var getAllListener = function(name){
+	if(!warning){
+		console.warn('mession component was called a deprecated function called "getAllListener",please decrease usage of it');
+		warning = true;
+	}
+	return listener;
+}
+var cleanListener = function(name){
+	delete listener[name];
+}
 var addTargetListener = function(name, callback) {
     if (listener.hasOwnProperty(name)) {
         if (listener[name].indexOf(callback) == -1) {
@@ -16,7 +31,7 @@ var emitTarget = function(name, ...argument) {
         return false;
     }
     if (listener[name].length <= 0) {
-        throw `there is no target to emit`;
+        console.warn(`there is no target to emit`);
         return false
     }
     for (let i in listener[name]) {

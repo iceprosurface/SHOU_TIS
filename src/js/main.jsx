@@ -49,6 +49,13 @@ import {
     ProjectList
 } from "./components/project.jsx"
 
+import {
+	NoticeCreate,
+	NoticeList,
+	NoticeShow,
+	NoticeDisplay
+} from './components/notice.jsx'
+
 const App = React.createClass({
     getInitialState() {
         var state = {
@@ -138,13 +145,31 @@ const People = React.createClass({
         )
     }
 })
+
+const Notice = React.createClass({
+	render(){
+		return (
+			<div>
+				<h2>this is notice page</h2>
+				{this.props.children}
+			</div>
+		)
+	}
+})
 render((
     <Router history={hashHistory}>
 		<Route path="/" component={App}>
-		  <Route path="people" component={People} />
+		  <Route path="people" component={People}>
+			  <Route path="create" component={ProjectCreate}/>
+		  </Route>
 		  <Route path="project" component={Project}>
 			  <Route path="create" component={ProjectCreate}/>
 			  <Route path="list" component={ProjectList}/>
+		  </Route>
+		  <Route path="notice" component={Notice}>
+			  <Route path="create" component={NoticeCreate}/>
+			  <Route path="list" component={NoticeList}/>
+			  <Route path="show" component={NoticeShow}/>
 		  </Route>
 		</Route>
 	</Router>

@@ -64,3 +64,4 @@ export class LoadingModal extends React.Component {
         )
     }
 }
+

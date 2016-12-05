@@ -5,7 +5,8 @@ const Schema = mongoose.Schema
 var staffSchema = new mongoose.Schema({
     name: String,
     age: Number,
-    info: String
+    info: String,
+	sid: Number
 });
 var projectSchema = new mongoose.Schema({
     pid: {
