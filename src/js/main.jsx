@@ -23,6 +23,10 @@ import {
     Nav,
     NavbarBrand,
     NavDropdown,
+	Col,
+	Row,
+	Grid,
+
 } from "react-Bootstrap";
 // 导入自己写的相关组件
 import Login from "./components/login.jsx"
@@ -53,7 +57,8 @@ import {
 	NoticeCreate,
 	NoticeList,
 	NoticeShow,
-	NoticeDisplay
+	NoticeDisplay,
+	NoticeLink
 } from './components/notice.jsx'
 
 const App = React.createClass({
@@ -106,14 +111,15 @@ const App = React.createClass({
 					</Navbar.Header>
 					<Nav>
 						<NavItem eventKey={1} href="#/people">用户信息</NavItem>
-						<NavDropdown eventKey={4} title="科研项目" id="basic-nav-dropdown">
-							<MenuItem eventKey={4.1} href="#/project/create">新建科研项目</MenuItem>
+						<NavDropdown eventKey={2} title="科研项目" id="basic-nav-dropdown">
+							<MenuItem eventKey={2.1} href="#/project/create">新建科研项目</MenuItem>
 							<MenuItem divider />
-							<MenuItem eventKey={4.2} href="#/project/list">科研项目预览</MenuItem>
+							<MenuItem eventKey={2.2} href="#/project/list">科研项目预览</MenuItem>
 						</NavDropdown>
 					</Nav>
 					<Nav pullRight>
-						<NavItem eventKey={3} href="#">{usrcon}</NavItem>
+						<NavItem eventKey={3} href="#/notice"><NoticeDisplay></NoticeDisplay></NavItem>
+						<NavItem eventKey={4} href="#">{usrcon}</NavItem>
 					</Nav>
 				</Navbar>
 				<div className="container" style={bodyCss}>{this.props.children}</div>
@@ -151,7 +157,12 @@ const Notice = React.createClass({
 		return (
 			<div>
 				<h2>this is notice page</h2>
-				{this.props.children}
+				<Grid>
+					<Row>
+						<Col md={2}><NoticeLink></NoticeLink></Col>
+						<Col md={10}>{this.props.children}</Col>
+					</Row>
+				</Grid>
 			</div>
 		)
 	}

@@ -121,7 +121,7 @@ export default class Login extends React.Component {
         const tips = this.state.tipshow ? <p>用户名或密码错误你可以再试试~</p> : '';
         return (
             <div>
-				<ButtonGroup bsStyle="primary" bsSize="large">
+				<ButtonGroup bsStyle="primary" bsSize="xs">
 					<Button bsStyle="primary" onClick={this.open.bind(this)} ><Glyphicon glyph="user" />登录</Button>
 					<Button bsStyle="primary" onClick={this.openDialog.bind(this)} ><Glyphicon glyph="pencil"/>注册</Button>
 				</ButtonGroup>
