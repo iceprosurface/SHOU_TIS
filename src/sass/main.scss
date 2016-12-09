@@ -5,6 +5,14 @@
 @import 'loading';
 //boot的圆角去除
 .nav {
-
     border-radius: 4px;
+}
+.page-header {
+	margin: 0 0 30px;
+}
+.list-group-item.disabled {
+	pointer-events: none;
+	&:hover,&:focus{ 
+		cursor: not-allowed;
+	}
 }

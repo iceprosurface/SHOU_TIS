@@ -14,7 +14,8 @@ import {
     Button,
     ButtonGroup,
     Glyphicon,
-    Overlay
+	Overlay,
+	Alert
 } from "react-Bootstrap"
 import {
     ReactDOM
@@ -34,6 +35,17 @@ const wellStyles = {
     maxWidth: 400,
     margin: '0 auto 10px'
 };
+
+const Tips = React.createClass({
+  render() {
+      return (
+		  <Alert bsStyle="danger">
+			  <p>你的用户名或密码可能错误</p>
+		  </Alert>
+      );
+  },
+});
+
 class InputButton extends React.Component {
     constructor(props) {
         super(props);
@@ -118,7 +130,7 @@ export default class Login extends React.Component {
 	}
 	// TODO : <icepro:2016.10.18>添加提示栏
     render() {
-        const tips = this.state.tipshow ? <p>用户名或密码错误你可以再试试~</p> : '';
+        const tips = this.state.tipshow ? <Tips></Tips> : '';
         return (
             <div>
 				<ButtonGroup bsStyle="primary" bsSize="xs">
@@ -131,13 +143,13 @@ export default class Login extends React.Component {
 					</Modal.Header>
 					<Modal.Body>
 						<div className="well" style={wellStyles}>
+							{tips}
 							<form ref={(form) => this.loginForm = form }>
 								<InputButton name="usr"  value={this.state.loginInfo.usr} glyph="user" placeholder="请输入用户名" changedValue={this.inputValue.bind(this)}/>
 								<br/>
 								<InputButton name="psw" type="psw"  value={this.state.loginInfo.psw} glyph="lock" placeholder="请输入密码" changedValue={this.inputValue.bind(this)}/>
 							</form>
 							<br/>
-							{tips}
 							<Button bsStyle="primary" bsSize="large" block onClick={this.login.bind(this)} >登录</Button>
 							<Button bsStyle="primary" bsSize="large" block>忘记密码</Button>
 							<Button bsSize="large" block onClick={this.close.bind(this)}>取消</Button>
