@@ -39,7 +39,7 @@ export class Input extends React.Component {
 						{this.props.label}{this.props.required?'*':""}
 					</Col>
 					<Col sm={10}>
-						<FormControl type={this.props.psw?'password':'text'} name={this.props.name} required={this.props.required?true:false} placeholder={this.props.tips} pattern={this.props.validate} title={this.props.tips}/>
+						<FormControl type={this.props.psw?'password':'text'} value={this.props.value} name={this.props.name} required={this.props.required?true:false} placeholder={this.props.tips} pattern={this.props.validate} title={this.props.tips} disabled={this.props.disabled?true:false}/>
 					</Col>
 				</FormGroup>
 			</div>
@@ -91,7 +91,8 @@ export class Select extends React.Component {
 
     }
 }
-//TODO:<icepro:2016.11.13>: should add textarea and muti-select ,may should add sync file upload component
+
+//TODO:<icepro:2016.11.13>: should add textarea and muti-select 
 
 export class Textarea extends React.Component {
 	render(){
@@ -101,7 +102,7 @@ export class Textarea extends React.Component {
 					{this.props.label}
 				</Col>
 				<Col sm={10}>
-					<FormControl componentClass="textarea" placeholder={this.props.placeholer} />
+					<FormControl componentClass="textarea" disabled={this.props.disabled?true:false} value={this.props.value} name={this.props.name} placeholder={this.props.placeholer} />
 				</Col>
 			</FormGroup>
 		)
@@ -122,3 +123,5 @@ export class FileInput extends React.Component {
 		)
 	}
 }
+// TODO <icepro 2016-11-27>: 需要添加一个time的选择类型
+

@@ -3,6 +3,35 @@ var usr = require(global.APP_PATH + '/model/usr');
 var jwt = require('jsonwebtoken');
 var conf = require(global.APP_PATH + '/conf.js');
 
+
+// create a usr
+exports.create = {
+    method: 'post',
+    path: '/usr/create',
+    fn: function(req, res, next) {
+        var oneNew = new usr.fn({
+            name: req.body.usrname,
+            age: req.body.age,
+			psw: req.body.password
+		});
+        var result = {};
+        oneNew.save()
+            .then(function() {
+                    result['response'] = 'success';
+					// TODO:after registe login next
+                    return result;
+                },
+                function(err) {
+                    if (err) console.log('Error on save!');
+                    result['response'] = 'fails';
+                    return result;
+                })
+            .then(function() {
+                res.send(result);
+            });
+    }
+}
+
 exports.tokenLoginCheck = {
     method: 'get',
     path: '/login/token',
@@ -45,12 +74,13 @@ exports.tokenLoginCheck = {
                 console.log(err);
 				return;
             }
-        }
-        res.status(403).send({
-            respond: 'token error',
-            status: 403
-        });
-    }
+        }else{
+			res.status(403).send({
+				respond: 'no token to use',
+				status: 403
+			});
+			console.log('no token');
+		}
 }
 // 登录后可以在session中访问到login.usrname以及usrObjId
 exports.nomalLoginCheck = {
@@ -78,7 +108,9 @@ exports.nomalLoginCheck = {
                 }
                 if (doc) {
                     let token = jwt.sign({
-                        usrname: doc.name
+                        usrname: doc.name,
+						age: doc.age
+
                     }, conf.tokenSecret);
                     //logined 
                     res.cookie('logined', token, {

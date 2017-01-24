@@ -12,9 +12,6 @@ import {
     Form,
 	Button
 } from 'react-Bootstrap';
-import {
-    Input
-} from '../components/formItems.jsx';
 
 export class TableParser extends React.Component {
     constructor(props) {
@@ -22,8 +19,11 @@ export class TableParser extends React.Component {
     }
 	onSubmitFn(event){
 		// 外部访问接口用来处理表单提交事件
-		if(findDOMNode(this.refs.form).checkValidity()){
-			this.props.onSubmitFn(this.form);
+
+		var forms = findDOMNode(this.refs.form);
+		if(forms.checkValidity()){
+			this.props.onSubmitFn(forms);
+
 		}
 		event.preventDefault(); 
 		return false;
@@ -38,7 +38,9 @@ export class TableParser extends React.Component {
             datas[i].key = i
             row.push(React.createElement(datas[i].elem, datas[i]))
         }
-		let midButtonStyle = {'text-align':'center'};
+
+		let midButtonStyle = {'textAlign':'center'};
+
         return (
             <div>
 				<Form horizontal ref="form" onSubmit={this.onSubmitFn.bind(this)}>

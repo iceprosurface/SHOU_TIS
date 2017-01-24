@@ -13,7 +13,8 @@ var usrSchema = new mongoose.Schema({
     },
 	psw: {
 		type: String
-	}
+
+	},
 
 });
 exports.fn = mongoose.model('usr', usrSchema);

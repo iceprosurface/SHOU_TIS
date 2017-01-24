@@ -14,8 +14,13 @@ import {
     Button,
     ButtonGroup,
     Glyphicon,
-    Overlay
+
+    Overlay,
+    Alert
 } from "react-Bootstrap"
+import {
+    Register
+} from '../components/register.jsx'
 import {
     ReactDOM
 } from 'react-dom'
@@ -24,17 +29,28 @@ import {
     emitTarget
 } from "../util/message.js"
 import {
-	fetchData
+
+    fetchData
 } from "../util/ajax.js"
 import {
-    json,
-    status
+    json
 } from "../util/fetchUtil.js"
 
 const wellStyles = {
     maxWidth: 400,
     margin: '0 auto 10px'
 };
+
+const Tips = React.createClass({
+    render() {
+        return (
+            <Alert bsStyle="danger">
+			  <p>你的用户名或密码可能错误</p>
+		  </Alert>
+        );
+    },
+});
+
 class InputButton extends React.Component {
     constructor(props) {
         super(props);
@@ -77,8 +93,8 @@ export default class Login extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            showtips: false,
-            showModal: false,
+            showRegister: false,
+            showLogin: false,
             loginInfo: {
                 'usr': '',
                 'psw': '',
@@ -87,12 +103,31 @@ export default class Login extends React.Component {
     }
     close() {
         this.setState({
-            showModal: false
+            showLogin: false
         });
     }
-    open() {
+	registerSuccess(){
+		this.setState({
+			showLogin:true,
+			showRegister:false
+		});
+	}
+	registerClose(bool){
+		this.setState({
+			showRegister: bool
+		});
+	}
+    openRegister() {
         this.setState({
-            showModal: true
+            showLogin: false,
+            showRegister: true
+        });
+		return this.state.showRegister;
+    }
+    openLogin() {
+        this.setState({
+            showLogin: true,
+            showRegister: false
         });
     }
     inputValue(item) {
@@ -101,46 +136,54 @@ export default class Login extends React.Component {
         });
     }
     login() {
-		var form = new FormData(this.loginForm);
-		fetchData('login',{body:form}).then(json, (e) => {
-			this.setState({
-				tipshow: true
-			});
-			return Promise.reject();
-		})
-			.then((data) => {
-				// 呼叫事件表达目前已经登录
-				emitTarget('logined', true, data.name);
-			}).catch(function(e) {});
-	}
-	// TODO : <icepro:2016.10.18>添加提示栏
+        var form = new FormData(this.loginForm);
+        fetchData('login', {
+                body: form
+            })
+            .then(json, (e) => {
+                this.setState({
+                    tipshow: true
+                });
+                return Promise.reject();
+            })
+            .then((data) => {
+                // 呼叫事件表达目前已经登录
+                emitTarget('logined', true, data.name);
+			})
+			.catch(function(e) {});
+    }
+    openDialog() {
+            emitTarget('loadingOpen');
+        }
+        // TODO : <icepro:2016.10.18>添加提示栏
     render() {
-        const tips = this.state.tipshow ? <p>用户名或密码错误你可以再试试~</p> : '';
+        const tips = this.state.tipshow ? <Tips></Tips> : '';
         return (
             <div>
-				<ButtonGroup bsStyle="primary" bsSize="large">
-					<Button bsStyle="primary" onClick={this.open.bind(this)} ><Glyphicon glyph="user" />登录</Button>
-					<Button bsStyle="primary"><Glyphicon glyph="pencil"/>注册</Button>
+				<ButtonGroup bsStyle="primary" bsSize="xs">
+					<Button bsStyle="primary" onClick={this.openLogin.bind(this)} ><Glyphicon glyph="user" />登录</Button>
+					<Button bsStyle="primary" onClick={this.openRegister.bind(this)} ><Glyphicon glyph="pencil"/>注册</Button>
 				</ButtonGroup>
-				<Modal show={this.state.showModal} onHide={this.close.bind(this)}>
+				<Modal show={this.state.showLogin} onHide={this.close.bind(this)}>
 					<Modal.Header>
 						<Modal.Title>登录</Modal.Title>
 					</Modal.Header>
 					<Modal.Body>
 						<div className="well" style={wellStyles}>
+							{tips}
 							<form ref={(form) => this.loginForm = form }>
 								<InputButton name="usr"  value={this.state.loginInfo.usr} glyph="user" placeholder="请输入用户名" changedValue={this.inputValue.bind(this)}/>
 								<br/>
 								<InputButton name="psw" type="psw"  value={this.state.loginInfo.psw} glyph="lock" placeholder="请输入密码" changedValue={this.inputValue.bind(this)}/>
 							</form>
 							<br/>
-							{tips}
 							<Button bsStyle="primary" bsSize="large" block onClick={this.login.bind(this)} >登录</Button>
 							<Button bsStyle="primary" bsSize="large" block>忘记密码</Button>
 							<Button bsSize="large" block onClick={this.close.bind(this)}>取消</Button>
 						</div>
 					</Modal.Body>
 				</Modal>
+				<Register onSubmitSuccess={this.registerSuccess.bind(this)} onClose={this.registerClose.bind(this)} isOpen={this.state.showRegister} />
 			</div>
         );
     }
