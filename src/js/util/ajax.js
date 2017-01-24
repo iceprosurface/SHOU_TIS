@@ -30,6 +30,13 @@ function urlTemplate(strings, ...keys) {
 // put 更新
 // delete 删除
 const fetchList = {
+    // usrcreater
+    regist: {
+        url: urlTemplate `/usr/create`,
+        option: {
+            method: 'POST'
+        }
+    },
     // 正常登陆的fetch
     login: {
         url: urlTemplate `/login/check`,
@@ -44,17 +51,29 @@ const fetchList = {
     },
     // 创建一个fetch
     projectCreate: {
-        url: urlTemplate `/project`,
+        url: urlTemplate `/project/create`,
         option: {
             method: 'POST'
         }
     },
+	projectList: {
+		url: urlTemplate `/projects/list/page/${0}`
+	},
+	projectSingle: {
+		url: urlTemplate `/project/${0}`
+	},
     projectEdit: {
         url: urlTemplate `/project/${0}/edit`,
         option: {
             method: 'PUT'
         }
     },
+	projectEditStaff: {
+		url: urlTemplate `/project/${0}/staff/`,
+		option: {
+			method: 'PUT'
+		}
+	},
     staffCreate: {
         url: urlTemplate `/staff`,
         option: {
@@ -66,10 +85,14 @@ const fetchList = {
         option: {
             method: 'PUT'
         }
-	},
+    },
+    noticeList: {
+        url: urlTemplate `/notices/list/page/${0}`
+    },
 };
 
 // 传输数据前需要对option添加option.body
+// 需要在url中加入内容的，需要使用option.data添加
 function fetchData(name, option) {
     let url, data;
     option = Object.assign(init(), fetchList[name].option, option);

@@ -3,6 +3,7 @@
  * @time 2016/11/6 18:44:33 +UTC 08:00
  * @update 2016/11/22. 10:50:06 +UTC 08:00
  * ****************************/
+
 // 导入react 以及相关组件
 import React from 'react'
 import {
@@ -23,16 +24,17 @@ import {
     Nav,
     NavbarBrand,
     NavDropdown,
-	Col,
-	Row,
+    Col,
+    Row,
 	Grid,
-
+	PageHeader,
+	small,
 } from "react-Bootstrap";
 // 导入自己写的相关组件
 import Login from "./components/login.jsx"
 
 import {
-	LoadingModal
+    LoadingModal
 } from "./components/modal.jsx"
 
 // 导入监听者组件-用于响应事件的发生以回流state状态更新
@@ -50,16 +52,24 @@ import {
 } from "./util/cookie.js"
 import {
     ProjectCreate,
-    ProjectList
+	ProjectList,
+	ProjectEdit
 } from "./components/project.jsx"
 
 import {
-	NoticeCreate,
-	NoticeList,
-	NoticeShow,
-	NoticeDisplay,
-	NoticeLink
+	updateData,
+    NoticeCreate,
+    NoticeList,
+    NoticeShow,
+    NoticeDisplay,
+    NoticeLink,
+    NoticeInvite,
+    NoticeOther,
+    NoticeSystem,
 } from './components/notice.jsx'
+
+// pre-defined params use
+updateData();
 
 const App = React.createClass({
     getInitialState() {
@@ -71,9 +81,11 @@ const App = React.createClass({
                 logined: value,
                 name: name
             });
+			hashHistory.push('/');
+			// window.location.href = "/";
         });
-		fetchData('tokenLogin')
-			.then(json, (e) => {
+        fetchData('tokenLogin')
+            .then(json, (e) => {
                 throw new Error(e)
             })
             .then((data) => {
@@ -90,13 +102,12 @@ const App = React.createClass({
     render() {
         let usrcon;
         // 登录状态下切换显示名字
-        // TODO <icepro 2016.11.22>: 个人信息的修改选项-dropdown
         if (!this.state.logined) {
             usrcon = <Login />;
         } else {
             usrcon = <span>{this.state.name}</span>
         }
-        // 设置一个上方的偏移，使得navbar和container有一定的距离
+        // add an offset for main body in order to make it have some blank to nav bar
         const bodyCss = {
             'marginTop': '90px'
         }
@@ -106,7 +117,7 @@ const App = React.createClass({
 				<Navbar fixedTop inverse>
 					<Navbar.Header>
 						<Navbar.Brand>
-							<a href="#">SHOU</a>
+							<a href="#">shou</a>
 						</Navbar.Brand>
 					</Navbar.Header>
 					<Nav>
@@ -114,7 +125,7 @@ const App = React.createClass({
 						<NavDropdown eventKey={2} title="科研项目" id="basic-nav-dropdown">
 							<MenuItem eventKey={2.1} href="#/project/create">新建科研项目</MenuItem>
 							<MenuItem divider />
-							<MenuItem eventKey={2.2} href="#/project/list">科研项目预览</MenuItem>
+							<MenuItem eventKey={2.2} href="#/project/list/1">科研项目预览</MenuItem>
 						</NavDropdown>
 					</Nav>
 					<Nav pullRight>
@@ -141,22 +152,22 @@ const Project = React.createClass({
 })
 
 const People = React.createClass({
-    // 仅仅做测试
-    render() {
-        return (
-			<div>
+        // 仅仅做测试
+        render() {
+            return (
+                <div>
 				<div className='uil-reload-css'><div></div></div>
 				<h2>this is a people control</h2>
 			</div>
-        )
-    }
-})
-
+            )
+        }
+    })
+    // TODO<icepro:2016/12/07. 15:24:24>:it should be add an callback for fetch data on notice
 const Notice = React.createClass({
-	render(){
-		return (
-			<div>
-				<h2>this is notice page</h2>
+    render() {
+        return (
+            <div>
+				<PageHeader>通知提醒</PageHeader>
 				<Grid>
 					<Row>
 						<Col md={2}><NoticeLink></NoticeLink></Col>
@@ -164,8 +175,8 @@ const Notice = React.createClass({
 					</Row>
 				</Grid>
 			</div>
-		)
-	}
+        )
+    }
 })
 render((
     <Router history={hashHistory}>
@@ -175,11 +186,18 @@ render((
 		  </Route>
 		  <Route path="project" component={Project}>
 			  <Route path="create" component={ProjectCreate}/>
-			  <Route path="list" component={ProjectList}/>
+			  <Route path="list/:page" component={ProjectList}/>
+			  <Route path="manage">
+				  <Route path="edit/:pid" component={ProjectEdit}/>
+				  <Route path="midterm" component={ProjectList}/>
+				  <Route path="process" component={ProjectList}/>
+				  <Route path="endProject" component={ProjectList}/>
+			  </Route>
 		  </Route>
 		  <Route path="notice" component={Notice}>
-			  <Route path="create" component={NoticeCreate}/>
-			  <Route path="list" component={NoticeList}/>
+			  <Route path="invite/:page" component={NoticeInvite}/>
+			  <Route path="other/:page" component={NoticeOther}/>
+			  <Route path="system/:page" component={NoticeSystem}/>
 			  <Route path="show" component={NoticeShow}/>
 		  </Route>
 		</Route>

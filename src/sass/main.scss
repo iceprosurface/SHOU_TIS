@@ -10,9 +10,18 @@
 .page-header {
 	margin: 0 0 30px;
 }
+button {
+	margin-left:3px;
+}
+.pagination li>a, .pagination li>span {
+	border-left: 3px solid #e4e7ea;
+}
 .list-group-item.disabled {
 	pointer-events: none;
 	&:hover,&:focus{ 
 		cursor: not-allowed;
 	}
+}
+.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control, .select2-search input[type=text][disabled], .select2-search input[type=text][readonly], fieldset[disabled] .select2-search input[type=text]{
+	color: #000000;
 }

@@ -14,9 +14,12 @@ import {
     Button,
     ButtonGroup,
     Glyphicon,
-	Overlay,
-	Alert
+    Overlay,
+    Alert
 } from "react-Bootstrap"
+import {
+    Register
+} from '../components/register.jsx'
 import {
     ReactDOM
 } from 'react-dom'
@@ -25,7 +28,7 @@ import {
     emitTarget
 } from "../util/message.js"
 import {
-	fetchData
+    fetchData
 } from "../util/ajax.js"
 import {
     json
@@ -37,13 +40,13 @@ const wellStyles = {
 };
 
 const Tips = React.createClass({
-  render() {
-      return (
-		  <Alert bsStyle="danger">
+    render() {
+        return (
+            <Alert bsStyle="danger">
 			  <p>你的用户名或密码可能错误</p>
 		  </Alert>
-      );
-  },
+        );
+    },
 });
 
 class InputButton extends React.Component {
@@ -88,8 +91,8 @@ export default class Login extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            showtips: false,
-            showModal: false,
+            showRegister: false,
+            showLogin: false,
             loginInfo: {
                 'usr': '',
                 'psw': '',
@@ -98,12 +101,31 @@ export default class Login extends React.Component {
     }
     close() {
         this.setState({
-            showModal: false
+            showLogin: false
         });
     }
-    open() {
+	registerSuccess(){
+		this.setState({
+			showLogin:true,
+			showRegister:false
+		});
+	}
+	registerClose(bool){
+		this.setState({
+			showRegister: bool
+		});
+	}
+    openRegister() {
         this.setState({
-            showModal: true
+            showLogin: false,
+            showRegister: true
+        });
+		return this.state.showRegister;
+    }
+    openLogin() {
+        this.setState({
+            showLogin: true,
+            showRegister: false
         });
     }
     inputValue(item) {
@@ -112,32 +134,35 @@ export default class Login extends React.Component {
         });
     }
     login() {
-		var form = new FormData(this.loginForm);
-		fetchData('login',{body:form})
-			.then(json, (e) => {
-				this.setState({
-					tipshow: true
-				});
-				return Promise.reject();
+        var form = new FormData(this.loginForm);
+        fetchData('login', {
+                body: form
+            })
+            .then(json, (e) => {
+                this.setState({
+                    tipshow: true
+                });
+                return Promise.reject();
+            })
+            .then((data) => {
+                // 呼叫事件表达目前已经登录
+                emitTarget('logined', true, data.name);
 			})
-			.then((data) => {
-				// 呼叫事件表达目前已经登录
-				emitTarget('logined', true, data.name);
-			}).catch(function(e) {});
-	}
-	openDialog() {
-		emitTarget('loadingOpen');
-	}
-	// TODO : <icepro:2016.10.18>添加提示栏
+			.catch(function(e) {});
+    }
+    openDialog() {
+            emitTarget('loadingOpen');
+        }
+        // TODO : <icepro:2016.10.18>添加提示栏
     render() {
         const tips = this.state.tipshow ? <Tips></Tips> : '';
         return (
             <div>
 				<ButtonGroup bsStyle="primary" bsSize="xs">
-					<Button bsStyle="primary" onClick={this.open.bind(this)} ><Glyphicon glyph="user" />登录</Button>
-					<Button bsStyle="primary" onClick={this.openDialog.bind(this)} ><Glyphicon glyph="pencil"/>注册</Button>
+					<Button bsStyle="primary" onClick={this.openLogin.bind(this)} ><Glyphicon glyph="user" />登录</Button>
+					<Button bsStyle="primary" onClick={this.openRegister.bind(this)} ><Glyphicon glyph="pencil"/>注册</Button>
 				</ButtonGroup>
-				<Modal show={this.state.showModal} onHide={this.close.bind(this)}>
+				<Modal show={this.state.showLogin} onHide={this.close.bind(this)}>
 					<Modal.Header>
 						<Modal.Title>登录</Modal.Title>
 					</Modal.Header>
@@ -156,6 +181,7 @@ export default class Login extends React.Component {
 						</div>
 					</Modal.Body>
 				</Modal>
+				<Register onSubmitSuccess={this.registerSuccess.bind(this)} onClose={this.registerClose.bind(this)} isOpen={this.state.showRegister} />
 			</div>
         );
     }
