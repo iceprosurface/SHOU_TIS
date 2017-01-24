@@ -3,6 +3,34 @@ var usr = require(global.APP_PATH + '/model/usr');
 var jwt = require('jsonwebtoken');
 var conf = require(global.APP_PATH + '/conf.js');
 
+// create a usr
+exports.create = {
+    method: 'post',
+    path: '/usr/create',
+    fn: function(req, res, next) {
+        var oneNew = new usr.fn({
+            name: req.body.usrname,
+            age: req.body.age,
+			psw: req.body.password
+		});
+        var result = {};
+        oneNew.save()
+            .then(function() {
+                    result['response'] = 'success';
+					// TODO:after registe login next
+                    return result;
+                },
+                function(err) {
+                    if (err) console.log('Error on save!');
+                    result['response'] = 'fails';
+                    return result;
+                })
+            .then(function() {
+                res.send(result);
+            });
+    }
+}
+
 exports.tokenLoginCheck = {
     method: 'get',
     path: '/login/token',

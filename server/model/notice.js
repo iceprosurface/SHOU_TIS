@@ -10,9 +10,13 @@ var noticeSchema = new mongoose.Schema({
         type: Schema.Types.ObjectId,
         ref: 'usr'
     },
+    ntype: {
+        type: String,
+        enum: ['system', 'other', 'invitation']
+    },
     extra: Schema.Types.Mixed,
     information: String,
-	createTime: Date,
+    createTime: Date,
 });
 
 exports.notice = mongoose.model('notice', noticeSchema);

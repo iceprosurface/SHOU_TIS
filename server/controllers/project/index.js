@@ -28,7 +28,8 @@ exports.list = function(req, res, next) {
     pj.project.find({
         adminUsrChief: ObjectId(req.session.usrObjId)
     }, "name  createTime endTime adminUsr pid", {
-        skip: page * 20
+        skip: page * 20,
+		limit: 20
     }).exec(function(err, projectList) {
         if (!err) {
             result.list = projectList;

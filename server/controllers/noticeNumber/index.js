@@ -29,7 +29,8 @@ exports.list = function(req, res, next) {
     notice.find({
             receiver: ObjectId(req.session.usrObjId)
         }, "sender extra infomation", {
-            skip: page * 20
+            skip: page * 20,
+            limit: 20
         })
         .populate('sender')
         .exec(function(err, noticelist) {
@@ -52,8 +53,9 @@ exports.list = function(req, res, next) {
 // display the specified project，it will be recognitize req.params.project_id.
 exports.show = function(req, res, next) {
     var result = {};
+    if (['system', 'other', 'invitation'].indexOf(req.params.noticeNumber_id) == -1) res.status(403).send('this is not allowed to request data beyond system other and invitation,please try again');
     notice.findOne({
-            receiver: ObjectId(req.params.staff_id),
+            receiver: ObjectId(req.params.noticeNumber_id),
         }, "sender extra infomation createTime", {})
         .populate('sender')
         .exec(function(err, noticeSingle) {
@@ -80,7 +82,7 @@ exports.create = function(req, res, next) {
         information: req.body.info,
         createTime: new Date()
     });
-	// save notice obj to mongoose
+    // save notice obj to mongoose
     newNotice.save()
         .then(function() {
                 result.response = 'success';
