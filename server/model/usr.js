@@ -11,6 +11,12 @@ var usrSchema = new mongoose.Schema({
         type: Number,
         min: 0
     },
+	sid: {
+		type: Number,
+		index: {
+			unique: true,
+		}
+	},
 	psw: {
 		type: String
 	},

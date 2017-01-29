@@ -26,15 +26,15 @@ var checkUsrToken = function(req, res) {
                 maxAge: 3600 * 1000
             });
             // 储存session
-            req.session.logined = {
-                usrname: decoded.usrname
-            };
+            //req.session.logined = {
+            //    usrname: decoded.usrname
+            //};
             // 成功
-            console.log('one user have been successfully logined');
+            //console.log('one user have been successfully logined');
             return TOKEN_STATUS.OK;
         } else {
             // 失败
-            console.log('token fail');
+            //console.log('token fail');
             return TOKEN_STATUS.FAIL;
         }
     } catch (err) {

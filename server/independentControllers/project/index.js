@@ -129,20 +129,25 @@ exports.create = {
     path: '/project/create',
     fn: function(req, res, next) {
         // 创建者
+		console.log(req.session.logined);
         var mine = new pj.staff({
             name: req.session.logined.usrname,
             age: req.session.logined.age,
-            sid: req.body.sid
+            sid: req.session.logined.sid
         });
-        // 创建一个新的项目
-        var newPj = new pj.project({
+		var projectObj = {
             pid: req.body.projectid,
             name: req.body.projectName!=""?req.body.projectName:"这是一个项目的默认名称请自行修改",
             information: req.body.info,
             createTime: new Date(),
             staffs: [mine],
-            adminUsrChief: req.session.usrObjId
-        });
+            adminUsrChief: req.session.usrObjId,
+        }
+		if(req.file){
+			projectObj["file"] = req.file.buffer;
+		}
+        // 创建一个新的项目
+        var newPj = new pj.project(projectObj);
         var result = {};
         // 创建一个全新的project这个是默认的project以后相关信息将会通过project.update
         newPj.save()

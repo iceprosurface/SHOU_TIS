@@ -25,18 +25,24 @@ const clearNullObj = require(global.APP_PATH + '/lib/common.js').clearNullObj;
 // only need 'create' and 'edit' ,because it......
 exports.create = {
     method: 'post',
-    path: '/staff/create',
+    path: '/project/:pid/staff/create',
     fn: function(req, res, next) {
         // if any body requirement is null or any viod obj ,it should be inturript and backword 403
-        if (!(req.body.pid && req.body.usrname && req.body.age && req.body.info && req.body.sid)) res.status(403).send('you are not allowed to inut an empty form');
+        if (!(req.params.pid && req.body.usrname && req.body.age && req.body.sid)){
+		   	res.status(403).send('you are not allowed to inut an empty form');
+			// break
+			return;
+		}
         var newStaff = {
             name: req.body.usrname,
             age: req.body.age,
-            info: req.body.info,
             sid: req.body.sid
         };
+		if(req.body.info)
+			newStaff["info"] = req.body.info;
         // use session to current body pid to find any requirement
-        pj.project.findByIdAndUpdate(ObjectId(req.body.pid), {
+        // pj.project.findByIdAndUpdate(ObjectId(req.params.pid), {
+        pj.project.findOneAndUpdate({pid:req.params.pid}, {
             $push: {
                 staffs: newStaff
             }
@@ -61,18 +67,29 @@ exports.create = {
 
 exports.edit = {
     method: 'put',
-    path: '/staff/:staff_id/edit',
+    path: '/project/:pid/staff/:staff_id/edit',
     fn: function(req, res, next) {
         // only need to sid for search
-        if (req.body.sid) res.status(403).send('you are not allowed to inut an empty form');
+        if (req.params.sid){
+		   	res.status(403).send('you are not allowed to inut an empty form')
+			return;
+		}
         var staff_id = req.params.staff_id;
+		var pid = req.params.pid;
         var newStaff = clearNullObj.call({
-            sid: req.body.sid,
+			sid: staff_id,
             info: req.body.info,
             age: req.body.age,
-            name: req.body.name
+            name: req.body.usrname
         });
-        pj.project.findByIdAndUpdate(ObjectId(req.body.sid), newStaff, {
+        pj.project.findOneAndUpdate({
+			"pid": pid,
+			"staffs.sid":staff_id
+		},{
+		   $set:{
+			   "staffs.$": newStaff
+		   }
+		},{
             safe: true,
             upsert: true
         }, (err, model) => {

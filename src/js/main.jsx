@@ -178,6 +178,28 @@ const Notice = React.createClass({
         )
     }
 })
+const Test = React.createClass({
+
+	submits(){
+		
+        var form = new FormData(this.refs.forms);
+		fetch("/file/upload", {method:"POST",body:form}).then(function(){
+		}).catch(function(e){
+			console.lod(e);
+		});
+	},
+	render() {
+		return(
+			<div>
+				<form ref="forms" method="post" enctype="multipart/form-data">
+					<input type="file" name="upload"/>
+				</form>
+				<button onClick={this.submits.bind(this)}>提交</button>
+			</div>
+		)
+	}
+});
+
 render((
     <Router history={hashHistory}>
 		<Route path="/" component={App}>
@@ -199,6 +221,8 @@ render((
 			  <Route path="other/:page" component={NoticeOther}/>
 			  <Route path="system/:page" component={NoticeSystem}/>
 			  <Route path="show" component={NoticeShow}/>
+		  </Route>
+		  <Route path="test" component={Test}>
 		  </Route>
 		</Route>
 	</Router>

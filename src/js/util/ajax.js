@@ -56,32 +56,38 @@ const fetchList = {
             method: 'POST'
         }
     },
+	// 用来显示project列表的
 	projectList: {
 		url: urlTemplate `/projects/list/page/${0}`
 	},
+	// 用来获取单个project全部信息的pid主导
 	projectSingle: {
 		url: urlTemplate `/project/${0}`
 	},
+	// 对单个project部分基本信息修改，可以修改内容包括name，information
     projectEdit: {
         url: urlTemplate `/project/${0}/edit`,
         option: {
             method: 'PUT'
         }
     },
-	projectEditStaff: {
-		url: urlTemplate `/project/${0}/staff/`,
-		option: {
-			method: 'PUT'
-		}
-	},
+	// 对项目的某一个staff作出修改
+//	projectEditStaff: {
+//		url: urlTemplate `/project/${0}/staff/`,
+//		option: {
+//			method: 'PUT'
+//		}
+//	},
+	// 创建一个staff 
     staffCreate: {
-        url: urlTemplate `/staff`,
+        url: urlTemplate `/project/${0}/staff/create`,
         option: {
             method: 'post'
         }
     },
+	// 对某一个staff作出修改
     staffEdit: {
-        url: urlTemplate `/staff/${0}/edit`,
+        url: urlTemplate `/project/${0}/staff/${1}/edit`,
         option: {
             method: 'PUT'
         }
