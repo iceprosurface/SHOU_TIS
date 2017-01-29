@@ -6,20 +6,34 @@ const express = require('express'),
 	session = require('express-session'),
 	bodyParser = require('body-parser');
 const conf = require('./conf.js');
-var multer = require('multer');
-var upload = multer(); 
 //定义全局根目录
 global.APP_PATH = __dirname;
 
+const multer = require('multer');
 // 实例化experess,同时输出文件到express
 var app = module.exports = express();
 // 代理静态资源
 app.use(serveStatic(__dirname + '/../dest'));
 // 使用bodyparse 使得form-data可以被解析
 // 要在route前导入
+// 如果需要可以选择保存到本地目前采用mongoDB储存的形式
+//var storage = multer.diskStorage({
+//	//设置上传后文件路径，uploads文件夹会自动创建。
+//	destination: function (req, file, cb) {
+//		console.log(file);
+//		cb(null, APP_PATH + '/upload');
+//	}, 
+//	//给上传文件重命名，获取添加后缀名
+//	filename: function (req, file, cb) {
+//		var fileFormat = (file.originalname).split(".");
+//		cb(null, file.fieldname + '-' + Date.now() + "." + fileFormat[fileFormat.length - 1]);
+//	}
+//});  
+//var upload = multer({ storage:storage});
+var upload = multer();
+app.use(upload.single("upload"));
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(bodyParser.json({ type: 'application/*+json' }))
-app.use(upload.array()); // for parsing multipart/form-data
+app.use(bodyParser.json({ type: 'application/*+json' }));
 // 导入数据库连接
 var db = require('./model/db');
 // 导入自动化controller
@@ -28,18 +42,19 @@ var route = require('./lib/controller');
 // 使用cookie代理插件
 app.use(cookieParser(conf.secret));
 console.log('now use ' + conf.cookieSecret);
-// 设置session
+// 设置session,使用128位密码加密，random
+// cookie最大存活时间 1 分钟
 app.use(session({
     secret: 'recommand 128 bytes random string',
     resave: false,
     saveUninitialized: true,
     cookie: {
-        maxAge: 60 * 1000
+        maxAge: 60 * 60 * 1000
     }
 }));
 
 require(__dirname + '/lib/controller')(app, {
-    islog: true
+	islog: false
 });
 
 // 错误处理

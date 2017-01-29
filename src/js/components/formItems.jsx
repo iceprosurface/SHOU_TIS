@@ -39,7 +39,7 @@ export class Input extends React.Component {
 						{this.props.label}{this.props.required?'*':""}
 					</Col>
 					<Col sm={10}>
-						<FormControl type={this.props.psw?'password':'text'} value={this.props.value} name={this.props.name} required={this.props.required?true:false} placeholder={this.props.tips} pattern={this.props.validate} title={this.props.tips} disabled={this.props.disabled?true:false}/>
+						<FormControl type={this.props.psw?'password':'text'} readOnly={this.props.readonly} defaultValue={this.props.value} name={this.props.name} required={this.props.required?true:false} placeholder={this.props.placeholder?this.props.placeholder:this.props.tips} pattern={this.props.validate} title={this.props.tips} disabled={this.props.disabled?true:false}/>
 					</Col>
 				</FormGroup>
 			</div>
@@ -117,7 +117,7 @@ export class FileInput extends React.Component {
 					{this.props.label}
 				</Col>
 				<Col sm={10}>
-					<FormControl type="file" componentClass="input"/>
+					<FormControl type="file" name={this.props.name?this.props.name:"upload"} componentClass="input"/>
 				</Col>
 			</FormGroup>
 		)

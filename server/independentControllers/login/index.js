@@ -12,7 +12,8 @@ exports.create = {
         var oneNew = new usr.fn({
             name: req.body.usrname,
             age: req.body.age,
-			psw: req.body.password
+			psw: req.body.password,
+			sid: req.body.sid
 		});
         var result = {};
         oneNew.save()
@@ -118,7 +119,9 @@ exports.nomalLoginCheck = {
                     });
                     // 储存session
                     req.session.logined = {
-                        usrname: doc.name
+                        usrname: doc.name,
+						age: doc.age,
+						sid: doc.sid
                     };
 					req.session.usrObjId = doc._id;
                     res.status(200).send({

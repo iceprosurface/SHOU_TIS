@@ -44,9 +44,9 @@ const wellStyles = {
 const Tips = React.createClass({
     render() {
         return (
-            <Alert bsStyle="danger">
-			  <p>你的用户名或密码可能错误</p>
-		  </Alert>
+			<Alert bsStyle="danger">
+				<p>你的用户名或密码可能错误</p>
+			</Alert>
         );
     },
 });

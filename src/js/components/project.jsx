@@ -19,7 +19,7 @@ import {
 	ModalFooter
 } from 'react-Bootstrap';
 import {
-    TableParser
+	TableParser
 } from '../components/TableParser.jsx';
 import {
     Input,
@@ -79,7 +79,11 @@ export class ProjectCreate extends React.Component {
             name: 'info',
             placeholer: '请输入',
             label: '项目基本信息'
-        }];
+		},{
+			elem: FileInput,
+			label: "需要提交的文件",
+			name: "upload"
+		}];
 		const tips = this.state.tipshow ? (
 			<Alert bsStyle="danger">
 				<p>你的id可能是重复值，如果确信你的id值是独立的，请联系管理员解决</p>
@@ -120,30 +124,63 @@ export class ProjectEdit extends React.Component {
 		// 这里是用来显示pid
 		// this.props.params.page
     }
+	initData(){
+		// 获取相关数据
+        fetchData('projectSingle',{data:[this.props.params.pid]})
+            .then(json, (e) => {
+                return Promise.reject(new Error(e));
+            })
+            .then((data) => {
+				this.setState({
+					list:data.list,
+					show:false
+				});
+			})
+			.catch(function(error){
+				console.warn(error);
+			});
+	}
     onSubmitFn(form) {
         var form = new FormData(form);
-		if(this.state.editType !== 0){
-			fetchData("projectEditStaff", {
-				body: form,
-				data:[this.props.params.pid]
-			}).then(json, function(e) {
-				console.log(e);
-				return Promise.reject();
-			}).then((data) => {
-				console.log(data);
-			});
-		}else{
-			fetchData("projectEdit", {
-				body: form,
-				data:[this.props.params.pid]
-			}).then(json, function(e) {
-				return Promise.reject();
-			}).then((data) => {
-				this.setState({
-					list:Object.assign(this.state.list,data.list),
-					show: false
-				})	
-			});
+		switch(this.state.editType){
+			// 执行正常命令
+			case 1:
+				// 编辑staff信息
+				fetchData("staffEdit", {
+					body: form,
+					data:[this.props.params.pid,form.get("sid")]
+				}).then(json, function(e) {
+					console.log(e);
+					return Promise.reject();
+				}).then((data) => {
+					this.initData();
+				});
+				break;
+			case 0:
+				// 编辑基本project信息
+				fetchData("projectEdit", {
+					body: form,
+					data:[this.props.params.pid]
+				}).then(json, function(e) {
+					return Promise.reject();
+				}).then((data) => {
+					this.setState({
+						list:Object.assign(this.state.list,data.list),
+						show: false
+					})	
+				});
+				break;
+			case 2:
+				// 创建一个全新的staff
+				fetchData("staffCreate", {
+					body: form,
+					data:[this.props.params.pid]
+				}).then(json, function(e) {
+					return Promise.reject();
+				}).then((data) => {
+					this.initData();
+				});
+				break;
 		}
     }
 	edit(type){
@@ -170,27 +207,81 @@ export class ProjectEdit extends React.Component {
 		return false;
 	}
 	staffEdit(staffObject){
-		var data = [
-			{
+		var data = [ {
 				elem: Input,
-				disabled: true,
-				name: "staffOld",
-				label: "旧人员信息",
+				validate: "^\\d+$",
+				name: "sid",
+				label: "sid",
+				tips:"工号必须填写且必须是数字",
 				required: true,
-				value: staffObject.name + "#" + staffObject._id
+				readonly:true,
+				value:staffObject.sid
 			},{
 				elem: Input,
-				name: "staffNew",
-				label: "新人员",
+				name: "usrname",
+				label: "姓名",
 				required: true,
-			}
-		];
+				value:staffObject.name,
+			},{
+				elem: Input,
+				validate: "^[1-9][0-9]$",
+				name: "age",
+				label: "年龄",
+				tips:"年龄必须填写，且必须是2位整数",
+				value: staffObject.age,
+				required: true,
+			},{
+				elem: Textarea,
+				label: "原个人简略信息",
+				value: staffObject.info,
+				disabled: true
+			},{
+				elem: Textarea,
+				name: "info",
+				label: "改后简略信息"
+			}];
 		this.setState({
 			show: true,
 			editType: 1,
 			modalData: data
 		});
 		return false;
+	}
+	addStaff(){
+		var data = [
+			{
+				elem: Input,
+				name: "usrname",
+				label: "姓名",
+				required: true
+			},{
+				elem: Input,
+				validate: "^[1-9][0-9]$",
+				name: "age",
+				label: "年龄",
+				tips:"年龄必须填写，且必须是2位整数",
+				required: true
+			},{
+				elem: Input,
+				validate: "^\\d+$",
+				name: "sid",
+				label: "sid",
+				tips:"工号必须填写且必须是数字",
+				required: true
+			},{
+				elem: Textarea,
+				name: "info",
+				label: "个人简略信息"
+			}];
+		this.setState({
+			show: true,
+			modalData:data,
+			editType: 2
+		});
+		return false;
+	}
+	deleteStaff(){
+
 	}
 	render() {
 		let rows = [];
@@ -202,8 +293,8 @@ export class ProjectEdit extends React.Component {
 				staffsRows.push(
 						<tr className="row" key={"staff-" + i.toString()} >
 							<td className="cell-ms-3"></td>
-							<td className="cell-ms-6">{list.staffs[i].name}#{list.staffs[i]._id}</td>
-							<td className="cell-ms-3"><Button bsStyle="primary" onClick={this.staffEdit.bind(this,list.staffs[i])} >修改</Button></td>
+							<td className="cell-ms-6">{list.staffs[i].name}#{list.staffs[i].sid}</td>
+							<td className="cell-ms-3"><Button bsStyle="primary" onClick={this.staffEdit.bind(this,list.staffs[i])} >修改</Button><Button bsStyle="danger" onClick={this.deleteStaff.bind(this,i)}>删除</Button></td>
 						</tr>
 				)
 			}	
@@ -211,7 +302,7 @@ export class ProjectEdit extends React.Component {
 		let close = ()=> this.setState({ show:false , editType : 0});
 		return (
 			<div>
-				<Button bsStyle="primary">新增员工</Button>
+				<Button bsStyle="primary" onClick={this.addStaff.bind(this)}>新增员工</Button>
 				<hr />
 				<Table>
 					<tbody>
@@ -296,7 +387,7 @@ export class ProjectList extends React.Component {
 		let list = this.state.list;
 		for(let i = 0 ;i < list.length ; i++){
 			rows.push(	
-				<tr>
+				<tr key={"project-list-" + i.toString()}>
 					<td>{list[i].pid}</td>
 					<td>{list[i].name}</td>
 					<td>{list[i].createTime}</td>
