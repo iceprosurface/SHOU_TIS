@@ -3,6 +3,7 @@ var usr = require(global.APP_PATH + '/model/usr');
 var jwt = require('jsonwebtoken');
 var conf = require(global.APP_PATH + '/conf.js');
 
+
 // create a usr
 exports.create = {
     method: 'post',
@@ -81,7 +82,6 @@ exports.tokenLoginCheck = {
 			});
 			console.log('no token');
 		}
-    }
 }
 // 登录后可以在session中访问到login.usrname以及usrObjId
 exports.nomalLoginCheck = {
@@ -111,6 +111,7 @@ exports.nomalLoginCheck = {
                     let token = jwt.sign({
                         usrname: doc.name,
 						age: doc.age
+
                     }, conf.tokenSecret);
                     //logined 
                     res.cookie('logined', token, {

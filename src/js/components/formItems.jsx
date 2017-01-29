@@ -91,7 +91,9 @@ export class Select extends React.Component {
 
     }
 }
+
 //TODO:<icepro:2016.11.13>: should add textarea and muti-select 
+
 export class Textarea extends React.Component {
 	render(){
 		return (
@@ -121,5 +123,5 @@ export class FileInput extends React.Component {
 		)
 	}
 }
-
 // TODO <icepro 2016-11-27>: 需要添加一个time的选择类型
+
