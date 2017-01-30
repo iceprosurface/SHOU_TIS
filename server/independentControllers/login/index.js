@@ -112,7 +112,6 @@ exports.nomalLoginCheck = {
                     let token = jwt.sign({
                         usrname: doc.name,
 						age: doc.age
-
                     }, conf.tokenSecret);
                     //logined 
                     res.cookie('logined', token, {
@@ -122,7 +121,8 @@ exports.nomalLoginCheck = {
                     req.session.logined = {
                         usrname: doc.name,
 						age: doc.age,
-						sid: doc.sid
+						sid: doc.sid,
+						permission: doc.permission
                     };
 					req.session.usrObjId = doc._id;
                     res.status(200).send({

@@ -40,7 +40,8 @@ export class ProjectCreate extends React.Component {
 	constructor(props) {
         super(props);
 		this.state = {
-			tipshow:false
+			tipshow:false,
+			warning: false
 		}
 	}
     onSubmitFn(form) {
@@ -54,7 +55,11 @@ export class ProjectCreate extends React.Component {
             .then((data) => {
 				hashHistory.push('/project/manage/edit/'+formData.get("projectid"));
 			},(code)=>{
-				this.setState({tipshow:true});
+				console.log(code);
+				if(code.message == "403")
+					this.setState({warning:true});
+				if(code.message == "401")
+					this.setState({tipshow:true});
 				
 			})
             .catch((e) => {
@@ -90,9 +95,15 @@ export class ProjectCreate extends React.Component {
 				<p>你的id可能是重复值，如果确信你的id值是独立的，请联系管理员解决</p>
 			</Alert>
 		): '';
+		const warning = this.state.warning ? (
+			<Alert bsStyle="danger">
+				<p>你的账号不允许创建project</p>
+			</Alert>
+		):'';
         return (
             <div>
 				{ tips }
+				{ warning }
 				<TableParser datas={data} onSubmitFn={this.onSubmitFn.bind(this)}/>
 			</div>
         )
@@ -359,7 +370,6 @@ export class ProjectEdit extends React.Component {
 export class ProjectList extends React.Component {
 	constructor(props){
 		super(props);
-
 		this.state = {
 			list: [],
 			total:0,
@@ -386,6 +396,10 @@ export class ProjectList extends React.Component {
 				console.warn(error);
 			});
 	}
+	calculatedStatus(status){
+		if(!status) return "项目状态未知";
+		return ["创建阶段","创建审核阶段","创建审核失败","答辩阶段","答辩失败","进行中","终止审核","终止阶段","中期检查未通过","项目结题中"][status];
+	}
 	handleSelect(eventKey) {
 		hashHistory.push(`/project/list/${eventKey}`);
 		this.initData(eventKey);
@@ -394,17 +408,30 @@ export class ProjectList extends React.Component {
 		let rows = [];
 		let list = this.state.list;
 		for(let i = 0 ;i < list.length ; i++){
+			let operation;
+			let status = parseInt(list[i].nowStatus);
+			if(status == 0 ){
+				operation =  ( <Button bsStyle="primary" onClick={()=>hashHistory.push("/project/manage/edit/" + list[i].pid)}>修改基本信息</Button>);
+			}else if(status == 5 ){
+				operation = (
+					<div>
+						<Button bsStyle="primary" onClick={()=>hashHistory.push("/project/manage/" + list[i].pid + "/progress")}>查询项目进度</Button>
+						<Button bsStyle="primary" onClick={()=>hashHistory.push("/project/manage/edit/" + list[i].pid)}>提交中期检查</Button>
+						<Button bsStyle="primary" onClick={()=>hashHistory.push("/project/manage/edit/" + list[i].pid)}>申请结题</Button>
+					</div>
+					)
+			}else{
+				operation = ( <span>禁止操作</span>)
+			}
 			rows.push(	
 				<tr key={"project-list-" + i.toString()}>
 					<td>{list[i].pid}</td>
 					<td>{list[i].name}</td>
 					<td>{list[i].createTime}</td>
-					<td>{list[i].endTime}</td>
+					<td>{list[i].endTime?list[i].endTime:"-"}</td>
+					<td>{this.calculatedStatus(list[i].nowStatus,list[i])}</td>
 					<td>
-						<Button bsStyle="primary" onClick={()=>hashHistory.push("/project/manage/edit/" + list[i].pid)}>修改</Button>
-						<Button bsStyle="primary" onClick={()=>hashHistory.push("/project/manage/edit/" + list[i].pid)}>提交中期检查</Button>
-						<Button bsStyle="primary" onClick={()=>hashHistory.push("/project/manage/" + list[i].pid + "/progress")}>查询项目进度</Button>
-						<Button bsStyle="primary" onClick={()=>hashHistory.push("/project/manage/edit/" + list[i].pid)}>申请结题</Button>
+						{operation}
 					</td>
 				</tr>
 			);
@@ -414,10 +441,11 @@ export class ProjectList extends React.Component {
 				<Table>
 					<thead>
 						<tr>
-							<th>pid</th>
-							<th>name</th>
+							<th>项目id</th>
+							<th>项目名称</th>
 							<th>创建时间</th>
 							<th>结束时间</th>
+							<th>当前状态</th>
 							<th>操作</th>
 						</tr>
 					</thead>

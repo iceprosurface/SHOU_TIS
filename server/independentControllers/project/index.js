@@ -1,5 +1,6 @@
 const pj = require(global.APP_PATH + '/model/project.js');
 const usr = require(global.APP_PATH + '/model/usr.js');
+const PERMISSION = usr.PERMISSION;
 const checks = require(global.APP_PATH + '/lib/tokenCheck');
 const conf = require(global.APP_PATH + '/conf.js');
 const mongoose = require('mongoose');
@@ -32,7 +33,7 @@ exports.list = {
 		}, function (err, total) {
 			pj.project.find({
 				adminUsrChief: ObjectId(req.session.usrObjId)
-			}, "name  createTime endTime adminUsr pid", {
+			}, "name nowStatus createTime endTime adminUsr pid", {
 				skip: page * 5,
 				limit: 5
 			}).exec(function(err, projectList) {
@@ -134,8 +135,14 @@ exports.create = {
     method: 'post',
     path: '/project/create',
     fn: function(req, res, next) {
+		if( req.session.logined.permission !== PERMISSION.PROJECT){
+			res.status(403).send({
+				response: "you are not allowed to create any project",
+				status: 403
+			})
+			return;
+		}
         // 创建者
-		console.log(req.session.logined);
         var mine = new pj.staff({
             name: req.session.logined.usrname,
             age: req.session.logined.age,
