@@ -27,23 +27,29 @@ exports.list = {
         // 保证page是一个整数
         var page = parseInt(req.params.page) ? parseInt(req.params.page) - 1 : 0;
         // 利用session查询
-        pj.project.find({
+		pj.project.count({
             adminUsrChief: ObjectId(req.session.usrObjId)
-        }, "name  createTime endTime adminUsr pid", {
-            skip: page * 20,
-            limit: 20
-        }).exec(function(err, projectList) {
-            if (!err) {
-                result.list = projectList;
-                result.status = 200;
-                result.response = "find lists";
-                //要在收到回执后在返回result
-                res.send(result);
-            } else {
-                // 出现错误的处理
-                res.status(502).send('may have a server error');
-            }
-        });
+		}, function (err, total) {
+			pj.project.find({
+				adminUsrChief: ObjectId(req.session.usrObjId)
+			}, "name  createTime endTime adminUsr pid", {
+				skip: page * 5,
+				limit: 5
+			}).exec(function(err, projectList) {
+				if (!err) {
+					result.list = projectList;
+					result.page = page + 1;
+					result.total = total;
+					result.status = 200;
+					result.response = "find lists";
+					//要在收到回执后在返回result
+					res.send(result);
+				} else {
+					// 出现错误的处理
+					res.status(502).send('may have a server error');
+				}
+			});
+		});
     }
 };
 

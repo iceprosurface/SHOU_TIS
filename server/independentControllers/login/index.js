@@ -82,6 +82,7 @@ exports.tokenLoginCheck = {
 			});
 			console.log('no token');
 		}
+	}
 }
 // 登录后可以在session中访问到login.usrname以及usrObjId
 exports.nomalLoginCheck = {

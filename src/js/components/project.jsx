@@ -10,6 +10,7 @@ import {
     render
 } from 'react-dom';
 import {
+    Pagination,
     Alert,
 	Table,
 	Button,
@@ -360,28 +361,35 @@ export class ProjectList extends React.Component {
 		super(props);
 
 		this.state = {
-			list: []
+			list: [],
+			total:0,
+			page: this.props.params.page
 		}
+		this.initData(this.state.page);
 
-        fetchData('projectList', {
-				data:[this.props.params.page]
+	}
+	initData(page){
+		fetchData('projectList', {
+				data:[page]
             })
             .then(json, (e) => {
                 return Promise.reject(new Error(e));
             })
             .then((data) => {
 				this.setState({
-					list:data.list	
+					list:data.list,
+					total:data.total,
+					page:data.page
 				});
 			})
 			.catch(function(error){
 				console.warn(error);
 			});
-
 	}
-	redirectEdit(pid) {
-		window.location.href = "#/project/manage/edit/" + pid;
-	}
+	handleSelect(eventKey) {
+		hashHistory.push(`/project/list/${eventKey}`);
+		this.initData(eventKey);
+    }
     render() {
 		let rows = [];
 		let list = this.state.list;
@@ -393,17 +401,16 @@ export class ProjectList extends React.Component {
 					<td>{list[i].createTime}</td>
 					<td>{list[i].endTime}</td>
 					<td>
-						<Button bsStyle="primary" onClick={this.redirectEdit.bind(this,list[i].pid)}>修改</Button>
-						<Button bsStyle="primary" onClick={this.redirectEdit.bind()}>提交中期检查</Button>
-						<Button bsStyle="primary" onClick={this.redirectEdit.bind()}>提交项目进度</Button>
-						<Button bsStyle="primary" onClick={this.redirectEdit.bind()}>申请结题</Button>
+						<Button bsStyle="primary" onClick={()=>hashHistory.push("/project/manage/edit/" + list[i].pid)}>修改</Button>
+						<Button bsStyle="primary" onClick={()=>hashHistory.push("/project/manage/edit/" + list[i].pid)}>提交中期检查</Button>
+						<Button bsStyle="primary" onClick={()=>hashHistory.push("/project/manage/" + list[i].pid + "/progress")}>查询项目进度</Button>
+						<Button bsStyle="primary" onClick={()=>hashHistory.push("/project/manage/edit/" + list[i].pid)}>申请结题</Button>
 					</td>
 				</tr>
 			);
 		}	
         return (
             <div>
-				<p>this is project List</p>
 				<Table>
 					<thead>
 						<tr>
@@ -418,6 +425,7 @@ export class ProjectList extends React.Component {
 						{rows}
 					</tbody>
 				</Table>
+				<Pagination bsSize="small" items={Math.ceil(this.state.total / 5)} maxButtons={5} activePage={this.state.page} onSelect={this.handleSelect.bind(this)} />
 			</div>
         )
     }
