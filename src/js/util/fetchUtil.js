@@ -11,7 +11,7 @@ function json(response) {
     if (contentType && contentType.indexOf("application/json") !== -1) {
         return response.json().then(function(json){return json});
 	} else {
-        console.log("Oops, we haven't got JSON!");
+        console.warn("this is not a JSON code");
     }
 }
 export {

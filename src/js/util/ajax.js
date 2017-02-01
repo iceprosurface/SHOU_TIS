@@ -92,6 +92,18 @@ const fetchList = {
             method: 'PUT'
         }
     },
+	// 查询一个progressList
+	progressList: {
+		url: urlTemplate `/project/${0}/progress/list/page/${1}`,
+
+	},
+	// 创建一个progress
+	progressCreate: {
+		url: urlTemplate `/progress/project/${0}`,
+		option: {
+			method : 'POST'
+		}
+	},
     noticeList: {
         url: urlTemplate `/notices/list/page/${0}`
     },

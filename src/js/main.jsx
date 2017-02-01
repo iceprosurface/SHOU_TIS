@@ -56,6 +56,10 @@ import {
 } from "./components/project.jsx"
 
 import {
+	ProgressList,
+	ProgressShow
+} from "./components/progress.jsx"
+import {
 	updateData,
     NoticeCreate,
     NoticeList,
@@ -211,7 +215,8 @@ render((
 			  <Route path="manage">
 				  <Route path="edit/:pid" component={ProjectEdit}/>
 				  <Route path="midterm" component={ProjectList}/>
-				  <Route path="process" component={ProjectList}/>
+				  <Route path=":pid/progress/list/:page" component={ProgressList}/>
+				  <Route path=":pid/progress/:progressId" component={ProgressShow}/>
 				  <Route path="endProject" component={ProjectList}/>
 			  </Route>
 		  </Route>

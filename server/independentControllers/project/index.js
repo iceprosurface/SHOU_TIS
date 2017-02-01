@@ -36,7 +36,7 @@ exports.list = {
 			}, "name nowStatus createTime endTime adminUsr pid", {
 				skip: page * 5,
 				limit: 5
-			}).exec(function(err, projectList) {
+			}).sort({createTime: "desc"}).exec(function(err, projectList) {
 				if (!err) {
 					result.list = projectList;
 					result.page = page + 1;
@@ -135,7 +135,8 @@ exports.create = {
     method: 'post',
     path: '/project/create',
     fn: function(req, res, next) {
-		if( req.session.logined.permission !== PERMISSION.PROJECT){
+		console.log(req.session.logined.permission);
+		if( req.session.logined.permission < PERMISSION.PROJECT){
 			res.status(403).send({
 				response: "you are not allowed to create any project",
 				status: 403

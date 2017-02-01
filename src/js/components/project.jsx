@@ -397,7 +397,7 @@ export class ProjectList extends React.Component {
 			});
 	}
 	calculatedStatus(status){
-		if(!status) return "项目状态未知";
+		if(status!==0 && status !== "0" && !status) return "项目状态未知";
 		return ["创建阶段","创建审核阶段","创建审核失败","答辩阶段","答辩失败","进行中","终止审核","终止阶段","中期检查未通过","项目结题中"][status];
 	}
 	handleSelect(eventKey) {
@@ -415,7 +415,7 @@ export class ProjectList extends React.Component {
 			}else if(status == 5 ){
 				operation = (
 					<div>
-						<Button bsStyle="primary" onClick={()=>hashHistory.push("/project/manage/" + list[i].pid + "/progress")}>查询项目进度</Button>
+						<Button bsStyle="primary" onClick={()=>hashHistory.push("/project/manage/" + list[i].pid + "/progress/list/1")}>查询项目进度</Button>
 						<Button bsStyle="primary" onClick={()=>hashHistory.push("/project/manage/edit/" + list[i].pid)}>提交中期检查</Button>
 						<Button bsStyle="primary" onClick={()=>hashHistory.push("/project/manage/edit/" + list[i].pid)}>申请结题</Button>
 					</div>
