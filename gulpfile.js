@@ -43,6 +43,62 @@ const apiProxy = proxy('/api/', {
 
 gulp.task('default', ['server', 'buildlib']);
 
+gulp.task('build',function(){
+    gulp.src("src/sass/main.scss")
+        .pipe(sass({
+            style: 'expanded'
+        }))
+        .on('error', function(err) {
+            gutil.log('sass Error!', err.message);
+            this.emit('end');
+        })
+        .pipe(gulp.dest("dest/css"))
+        .pipe(rename({
+            suffix: '.min'
+        }))
+        .pipe(minifycss({
+            keepSpecialComments: "*",
+            processImportFrom: ['!fonts.googleapis.com']
+        }))
+        .pipe(gulp.dest("dest/css"));
+    gulp.src("src/**/*.html")
+        .pipe(fileinclude())
+        .on('error', function(err) {
+            gutil.log('html Error!', err.message);
+            this.emit('end');
+        })
+        .pipe(gulp.dest("dest"))
+        .pipe(rev())
+        .on('error', function(err) {
+            gutil.log('html Error!', err.message);
+            this.emit('end');
+        })
+        .pipe(gulp.dest("dest"));
+        browserify({
+            entries: ["./src/js/main.jsx"],
+        })
+        .transform(babelify, {
+            presets: ["es2015", "react"],
+        })
+        .bundle()
+        .on('error', function(err) {
+            gutil.log('js Error!', err.message);
+            this.emit('end');
+        })
+        .pipe(source('bundle.js'))
+        .pipe(buffer())
+        .pipe(gulp.dest("dest/js"))
+        .pipe(uglify())
+        .on('error', function(err) {
+           gutil.log('js Error!', err.message);
+           this.emit('end');
+        })
+        .pipe(gulp.dest("dest/js"))
+        .pipe(reload({
+            stream: true
+        }));
+});
+
 gulp.task('buildlib', function() {
     return gulp.src('src/lib/**/**')
         .pipe(gulp.dest('dest/lib'));
