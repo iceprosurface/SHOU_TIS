@@ -104,6 +104,27 @@ const fetchList = {
 			method : 'POST'
 		}
 	},
+	// usr 页面的功能
+	myInfo: {
+		url: urlTemplate `/usr/info`
+	},
+	userAgeEdit: {
+		url: urlTemplate `/usr/info/Age/edit`,
+		option: {
+			method: 'POST'
+		}
+	},
+	// admin 页面的登录功能
+	adminLogin: {
+		url: urlTemplate `/admin/login`,
+		option: {
+			method: 'POST'
+		}
+	},
+	// admin 页面的check
+	adminTokenCheck: {
+		url: urlTemplate `/admin/token/check`
+	},
     noticeList: {
         url: urlTemplate `/notices/list/page/${0}`
     },

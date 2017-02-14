@@ -71,9 +71,48 @@ import {
     NoticeSystem,
 } from './components/notice.jsx'
 
+import {
+	AdminProjectChecker,
+	AdminProjectModify,
+	AdminUsrChecker,
+	AdminLogin,
+	AdminLogined
+} from './components/admin.jsx'
+
+import {
+	PeopleNav,
+	PeopleInfo,
+	PeopleSecret
+} from './components/people.jsx'
+
 // pre-defined params use
 updateData();
 
+const Check = React.createClass({
+	getInitialState() {
+		return {};
+	},
+	render(){
+		return (
+			<div>
+				<p>this is checkers</p>
+				{this.props.children}
+			</div>
+		)
+	}
+})
+const Admin = React.createClass({
+	getInitialState() {
+		return {};
+	},
+	render(){
+		return (
+			<div>
+				{this.props.children}
+			</div>
+		)
+	}
+})
 const App = React.createClass({
     getInitialState() {
         var state = {
@@ -130,6 +169,12 @@ const App = React.createClass({
 							<MenuItem divider />
 							<MenuItem eventKey={2.2} href="#/project/list/1">科研项目预览</MenuItem>
 						</NavDropdown>
+						<NavDropdown eventKey={3} title="切换模式" id="basic-nav-dropdown">
+							<MenuItem eventKey={3.1} href="#/check">审查者模式</MenuItem>
+							<MenuItem eventKey={3.2} href="#/admin/login">浏览模式</MenuItem>
+							<MenuItem divider />
+							<MenuItem eventKey={3.3} href="#/admin/login">管理者模式</MenuItem>
+						</NavDropdown>
 					</Nav>
 					<Nav pullRight>
 						<NavItem eventKey={3} href="#/notice"><NoticeDisplay></NoticeDisplay></NavItem>
@@ -154,14 +199,15 @@ const Project = React.createClass({
     }
 })
 
+//<!-- <div className='uil-reload-css'><div></div></div> -->
 const People = React.createClass({
         // 仅仅做测试
         render() {
             return (
-                <div>
-				<div className='uil-reload-css'><div></div></div>
-				<h2>this is a people control</h2>
-			</div>
+				<div>
+					<h2>this is a people control</h2>
+					{this.props.children}
+				</div>
             )
         }
     })
@@ -205,9 +251,20 @@ const Test = React.createClass({
 
 render((
     <Router history={hashHistory}>
+		<Router path="/checker" component={Check}>
+		</Router>
+		<Router path="/admin" component={Admin}>
+			<Router path="logined" component={AdminLogined}>
+				<Router path="projectCheck" component={AdminProjectChecker}/>
+				<Router path="usrCheck" component={AdminUsrChecker}/>
+				<Router path="AdminProjectModify" component={AdminProjectModify}/>
+			</Router>
+			<Router path="login" component={AdminLogin}></Router>
+		</Router>
 		<Route path="/" component={App}>
-		  <Route path="people" component={People}>
-			  <Route path="create" component={ProjectCreate}/>
+		  <Route path="people" component={PeopleNav}>
+			  <Route path="info" component={PeopleInfo}/>
+			  <Route path="secret" component={PeopleSecret}/>
 		  </Route>
 		  <Route path="project" component={Project}>
 			  <Route path="create" component={ProjectCreate}/>

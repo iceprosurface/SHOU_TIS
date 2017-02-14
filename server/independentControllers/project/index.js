@@ -104,7 +104,11 @@ exports.update = {
                 adminUsrChief: ObjectId(req.session.usrObjId)
             })
             .update(updatePj).then((err,doc) => {
-                res.send({status:200,response:'success',list:updatePj});
+				//if(err){
+				//	res.status(502).send({status:502,response:'error',errorCode:err.code});
+				//}else{
+					res.send({status:200,response:'success',list:updatePj});
+				//}
             });
 
     }

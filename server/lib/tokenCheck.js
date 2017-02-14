@@ -1,6 +1,6 @@
 // token 使用
 const jwt = require('jsonwebtoken');
-var conf = require(global.APP_PATH + '/conf.js');
+const conf = require(global.APP_PATH + '/conf.js');
 
 const TOKEN_STATUS = {
     OK: 1,
@@ -8,8 +8,34 @@ const TOKEN_STATUS = {
     ERROR: 3
 };
 
+const checkAdminToken = function(req , res) {
+	try {
+		// 先判断cookie是否存在
+		if (!(req.cookies && req.cookies.admin)) return false;
+		// 先decoded解码在使用
+		let decoded = jwt.verify(req.cookies.admin, conf.adminSecret);
+		// 自动解析token中的usrname并对比session中的admin
+		if (req.session.admin && decoded.usrname == req.session.admin.usrname) {
+			// 重新生成cookie以刷新时间
+			let token = jwt.sign({
+				usrname: decoded.usrname
+			}, conf.tokenSecret);
+			// 保存到cookie  
+			res.cookie('admin', token, {
+				maxAge: 3600 * 1000
+			});
+			return TOKEN_STATUS.OK;
+		} else {
+			return TOKEN_STATUS.FAIL;
+		}
+	} catch (err) {
+		// 输出错误
+		return TOKEN_STATUS.ERROR;
+	}	
+}
+
 // 检验用户token的函数
-var checkUsrToken = function(req, res) {
+const checkUsrToken = function(req, res) {
     try {
         // 先判断cookie是否存在
         if (!(req.cookies && req.cookies.logined)) return false;
@@ -46,6 +72,7 @@ var checkUsrToken = function(req, res) {
 
 module.exports = {
     TOKEN_STATUS,
-    checkUsrToken
+    checkUsrToken,
+	checkAdminToken
 }
 

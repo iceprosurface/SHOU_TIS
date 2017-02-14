@@ -2,7 +2,7 @@ const progress = require(global.APP_PATH + '/model/progress');
 const mongoose = require('mongoose');
 const TYPE = progress.TYPE;
 const ObjectId = mongoose.Types.ObjectId;
-var checks = require(global.APP_PATH + '/lib/tokenCheck');
+const checks = require(global.APP_PATH + '/lib/tokenCheck');
 const conf = require(global.APP_PATH + '/conf.js');
 //如果需要的话可以使用下面一种方式强制更改命名，但是不推荐
 //原因是再设计mvc的时候是通过文件名区分控制器的，如果擅自改动的话不同文件夹内容的
