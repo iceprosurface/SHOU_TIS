@@ -1,19 +1,81 @@
 const usr = require(global.APP_PATH + '/model/usr');
+const pj = require(global.APP_PATH + '/model/project.js');
 const checks = require(global.APP_PATH + '/lib/tokenCheck');
 const conf = require(global.APP_PATH + '/conf.js');
+const PERMISSION = usr.PERMISSION;
+const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
+const clearNullObj = require(global.APP_PATH + '/lib/common.js').clearNullObj;
+const tansObjToName = require(global.APP_PATH + '/lib/common.js').tansObjToName;
 
 exports.before = function(req, res, next) {
-    if (checks.checkUsrToken(req, res) != checks.TOKEN_STATUS.OK) {
+    if (checks.checkAdminToken(req, res) != checks.TOKEN_STATUS.OK) {
         res.status(403).end('you need login first');
         return;
     }
 
-    var usr = req.params.usr_id;
-    if (!usr) return next('route');
-    req.usr = usr;
+	if(req.session.admin.permission != PERMISSION.ADMIN.toString()){
+		res.status(403).send("you are not allowed use this api");
+		return;
+	}
     next();
-
 };
+
+exports.editProject = {
+    method: 'post',
+    path: '/admin/project/:pid/edit',
+	fn: function(req, res, next) {
+		var result = {};
+		var updatePj = clearNullObj.call({
+            name: req.body.name,
+            information: req.body.information,
+        });
+		if(req.body.createTime && req.body.createTime.match(/\d{4}-\d{2}-\d{2}/g))
+			updatePj.createTime = new Date(req.body.createTime);
+		if(req.body.endTime  && req.body.endTime.match(/\d{4}-\d{2}-\d{2}/g))
+			updatePj.endTime = new Date(req.body.endTime);
+		console.log(updatePj);
+        pj.project.where({
+                pid: req.params.pid,
+            })
+            .update(updatePj).then((err,doc) => {
+				//if(err){
+				//	res.status(502).send({status:502,response:'error',errorCode:err.code});
+				//}else{
+					res.send({status:200,response:'success',list:updatePj});
+				//}
+            });
+
+
+	}
+}
+
+exports.showStatus = {
+    method: 'get',
+    path: '/admin/project/:project_id/status',
+	fn: function(req, res, next) {
+		var result = {};
+		pj.project.findOne({
+				pid: req.params.project_id,
+			}, "nowStatus", {})
+			.exec(function(err, projectSingle) {
+				if (!err) {
+					if(!projectSingle){
+						res.status(404).send("cant find");
+						return;
+					}
+					result.list = projectSingle;
+					res.send(result);
+				} else {
+					// 在非调试阶段最好能移除所有的console使用一个log组件统一管理
+					console.log(err);
+					// 出现错误的处理
+					res.status(502).send('may have a server error');
+				}
+			});
+
+	}
+}
 
 exports.showProject = {
     method: 'get',
@@ -27,6 +89,10 @@ exports.showProject = {
 			.populate('adminUsr')
 			.exec(function(err, projectSingle) {
 				if (!err) {
+					if(!projectSingle){
+						res.status(404).send("cant find");
+						return;
+					}
 					// 将admin列表转换成名字列表，用户只需要知道名字和具体的id
 					projectSingle.adminUsr = tansObjToName.call(projectSingle.adminUsr);
 					// 修正一下admin的内容

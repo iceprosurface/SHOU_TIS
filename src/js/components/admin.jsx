@@ -10,6 +10,10 @@ import {
 	TableParser
 } from '../components/TableParser.jsx';
 import {
+	FormControl,
+	FormGroup,
+	ControlLabel,
+	Table,
 	Accordion,
 	Panel,
 	ListGroup,
@@ -149,7 +153,7 @@ export class AdminLogined extends React.Component {
 				console.log(e);
 			});
 		return(
-			<Grid>
+			<Grid className="admin-content">
 				<Row>
 					<Col xs={6} md={3}>
 						<Accordion>
@@ -158,7 +162,7 @@ export class AdminLogined extends React.Component {
 								<p><a href="#/admin/logined/AdminProjectModify">项目信息变更</a></p>
 							</Panel>
 							<Panel header="用户" eventKey="2">
-								<p><a href="#/admin/logined/usrCheck">项目信息变更</a></p>
+								<p><a href="#/admin/logined/usrCheck">用户个人信息变更</a></p>
 							</Panel>
 							<Panel header="审查" eventKey="3">
 							</Panel>
@@ -176,11 +180,95 @@ export class AdminLogined extends React.Component {
 export class AdminProjectChecker extends React.Component {
 	constructor(props) {
 		super(props);
+		this.state = {
+			status: 0 ,
+			dataInfoShow: false,
+			infoShow: false,
+			sidIllagel: false,
+		}
+	}
+	validate(event){
+		var key = event.key;
+		if(key == "Enter"){
+			var pid = event.target.value.toString();
+			if(pid.match(/^\d+$/g)){
+				this.setState({
+					sidIllagel: false,
+					infoShow: false,
+					dataInfoShow:false
+				});
+				this.findProject.call(this,pid);
+			}else{
+				this.setState({
+					sidIllagel: true,
+					infoShow: false,
+					dataInfoShow:false
+				});
+			}
+		}
+	}
+	findProject(pid){
+		fetchData('adminGetProjectStatusByPid',{
+				data:[pid]
+			})
+			.then(json, (e) => {
+				return Promise.reject(e);
+			})
+			.then((data) => {
+				this.setState({
+					status: data.list.nowStatus,
+					dataInfoShow:true,
+					pid: pid
+				});
+			},(code)=>{
+				this.setState({
+					infoShow: true,
+					pid: pid
+				});
+			})
+			.catch((e) => {
+				console.log(e);
+			});
+
 	}
 	render(){
+		let nowStatus = this.state.dataInfoShow?(
+				<FormGroup controlId={this.props.name}>
+					<Col componentClass={ControlLabel} sm={2}>
+						项目的进度
+					</Col>
+					<Col sm={10}>
+						<FormControl componentClass="select" defaultValue={this.state.status} placeholder={this.props.label}>
+							<option key={1} value="0">项目创建阶段</option>
+							<option key={2} value="1">创建审核阶段</option>
+							<option key={3} value="2">创建审核失败</option>
+							<option key={4} value="3">答辩阶段</option>
+							<option key={5} value="4">答辩失败</option>
+							<option key={6} value="5">进行中</option>
+							<option key={7} value="6">终止审核</option>
+							<option key={8} value="7">终止阶段</option>
+							<option key={9} value="8">中期检查未通过</option>
+							<option key={10} value="9">项目结题中</option>
+						</FormControl>
+					</Col>
+				</FormGroup>
+		):'';
+		let tips = this.state.sidIllagel?(<Row><Alert bsStyle="danger">项目id必须是数字</Alert></Row>):'';
+		let info = this.state.infoShow?( <Row><Alert bsStyle="danger">查无此id</Alert></Row>):'';
 		return(
 			<div>
-				<p>this.is.admin.project.check</p> 
+				<Alert>在这里可以对项目进行进度调整并制定项目的审核计划.</Alert>
+				{tips}
+				{info}
+				<Row>
+					<Col  sm={2} md={2}>
+						<label htmlFor="">项目id*</label>
+					</Col>
+					<Col  sm={10} md={10}>
+						<input type="text" name="sid" required="" value={this.state.sid} onKeyPress={this.validate.bind(this)} placeholder="项目id必须是数字" pattern="^\d+$" title="项目id必须是数字" id="sid" className="form-control"/>
+					</Col>
+				</Row>
+				{nowStatus}
 			</div>
 
 		)
@@ -205,16 +293,82 @@ export class AdminProjectModify extends React.Component {
 		super(props);
 		this.state = {
 			infoShow: false,
-			show: true,
-			data: {}
+			sidIllagel: false,
+			show: false,
+			data: {},
+			dataInfoShow:false,
+			pid:''
 		}
 	}
 	onSubmitFn(){
 		this.setState({
 			show: true,
-			data:[
-			]
+			data:{}
 		});	
+	}
+	editProject(){
+		var form = new FormData(this.refs.operation);
+		fetchData('adminEditProject',{
+				body: form,
+				data: [this.state.pid]
+			})
+			.then(json, (e) => {
+				return Promise.reject(e);
+			})
+			.then((data) => {
+				this.setState({
+					data: {},
+					dataInfoShow:false
+				});
+			},(code)=>{
+			})
+			.catch((e) => {
+				console.log(e);
+			});
+
+	}
+	findProject(pid){
+		fetchData('adminGetProjectByPid',{
+				data:[pid]
+			})
+			.then(json, (e) => {
+				return Promise.reject(e);
+			})
+			.then((data) => {
+				this.setState({
+					data: data.list,
+					dataInfoShow:true,
+					pid: pid
+				});
+			},(code)=>{
+				this.setState({
+					infoShow: true,
+					pid: pid
+				});
+			})
+			.catch((e) => {
+				console.log(e);
+			});
+	}
+	validate(event){
+		var key = event.key;
+		if(key == "Enter"){
+			var pid = event.target.value.toString();
+			if(pid.match(/^\d+$/g)){
+				this.setState({
+					sidIllagel: false,
+					infoShow: false,
+					dataInfoShow:false
+				});
+				this.findProject.call(this,pid);
+			}else{
+				this.setState({
+					sidIllagel: true,
+					infoShow: false,
+					dataInfoShow:false
+				});
+			}
+		}
 	}
 	render(){
 		var data = [{
@@ -226,14 +380,52 @@ export class AdminProjectModify extends React.Component {
             required: true,
 		}];
 		let close = ()=>this.setState({show: false});
+		let tips = this.state.sidIllagel?(<Row><Alert bsStyle="danger">项目id必须是数字</Alert></Row>):'';
+		let info = this.state.infoShow?( <Row><Alert bsStyle="danger">查无此id</Alert></Row>):'';
+		let project = this.state.data;
+		let projectInfo = this.state.dataInfoShow?(
+				<Row>
+					<form ref="operation">
+						<Table>
+							<tbody>
+								<tr>
+									<th>名称</th>
+									<th>值</th>
+								</tr>
+								<tr>
+									<td>管理员用户</td>
+									<td><input defaultValue={project.adminUsrChief._id} className="form-control" name="adminUsrChief"/></td>
+								</tr>
+								<tr>
+									<td>基本信息</td>
+									<td><textarea defaultValue={project.information} className="form-control"  name="information"></textarea></td>
+								</tr>
+								<tr>
+									<td>创建时间</td>
+									<td><input className="form-control"  type="date" defaultValue={project.createTime.substring(0,10)} name="createTime"/></td>
+								</tr>
+								<tr>
+									<td>项目名称</td>
+									<td><input defaultValue={project.name} className="form-control"  name="name"/></td>
+								</tr>
+							</tbody>
+						</Table>
+						<Button bsStyle="primary" onClick={this.editProject.bind(this)}>提交</Button>
+					</form>
+				</Row>):'';
 		return(
 			<div>
-				<div> 
-					<TableParser datas={data} onSubmitFn={this.onSubmitFn.bind(this)}/>
-				</div>
-				<div show={this.state.infoShow}> 
-
-				</div>
+				{tips}
+				{info}
+				<Row>
+					<Col  sm={2} md={2}>
+						<label htmlFor="">项目id*</label>
+					</Col>
+					<Col  sm={10} md={10}>
+						<input type="text" name="sid" required="" value={this.state.sid} onKeyPress={this.validate.bind(this)} placeholder="项目id必须是数字" pattern="^\d+$" title="项目id必须是数字" id="sid" className="form-control"/>
+					</Col>
+				</Row>
+				{projectInfo}
 				<Modal show={this.state.show} onHide={close} container={this} aria-labelledby="contained-modal-title" >
 					<Modal.Header closeButton>
 						<Modal.Title id="contained-modal-title">修改内容</Modal.Title>

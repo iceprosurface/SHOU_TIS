@@ -226,7 +226,7 @@ gulp.task('server', ['html', 'sass', 'script', 'css', 'serve'], function() {
 gulp.task('serve', function() {
     var server = gls.new('./server/index.js', {
         env: {
-            NODE_ENV: 'development'
+            NODE_ENV: 'development',
         }
     });
     server.start().then(function(result) {

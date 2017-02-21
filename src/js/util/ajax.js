@@ -125,6 +125,18 @@ const fetchList = {
 	adminTokenCheck: {
 		url: urlTemplate `/admin/token/check`
 	},
+	adminGetProjectByPid: {
+		url: urlTemplate `/admin/project/${0}`
+	},
+	adminGetProjectStatusByPid: {
+		url: urlTemplate `/admin/project/${0}/status`
+	},
+	adminEditProject: {
+		url: urlTemplate `/admin/project/${0}/edit`,
+		option: {
+			method: 'POST'
+		}
+	},
     noticeList: {
         url: urlTemplate `/notices/list/page/${0}`
     },

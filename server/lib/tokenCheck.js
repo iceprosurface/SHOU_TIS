@@ -19,7 +19,7 @@ const checkAdminToken = function(req , res) {
 			// 重新生成cookie以刷新时间
 			let token = jwt.sign({
 				usrname: decoded.usrname
-			}, conf.tokenSecret);
+			}, conf.adminSecret);
 			// 保存到cookie  
 			res.cookie('admin', token, {
 				maxAge: 3600 * 1000
