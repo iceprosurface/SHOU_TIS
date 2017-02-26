@@ -131,6 +131,13 @@ const fetchList = {
 	adminGetProjectStatusByPid: {
 		url: urlTemplate `/admin/project/${0}/status`
 	},
+	adminCheckUsr: {
+        url: urlTemplate `/admin/usr/check`,
+        method: 'POST'
+    },
+    adminGetUncheckUsr: {
+        url: urlTemplate `/admin/usr/uncheck`,
+    },
 	adminEditProject: {
 		url: urlTemplate `/admin/project/${0}/edit`,
 		option: {

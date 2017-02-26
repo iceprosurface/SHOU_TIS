@@ -20,7 +20,46 @@ exports.before = function(req, res, next) {
 	}
     next();
 };
-
+exports.CheckUsr = {
+    method: 'post',
+    path: '/admin/usr/check',
+	fn: function(req, res, next) {
+		
+	}
+}
+exports.UncheckUsrList = {
+    method: 'post',
+    path: '/admin/usr/uncheck',
+	fn: function(req, res, next) {
+		var result = {};
+        // 保证page是一个整数
+        var page = parseInt(req.params.page) ? parseInt(req.params.page) - 1 : 0;
+        // 利用session查询
+		usr.fn.count({
+            permission: PERMISSION.READY_CHECK
+		}, function (err, total) {
+			usr.fn.find({
+				permission: PERMISSION.READY_CHECK
+			}, "name age sid", {
+				skip: page * 5,
+				limit: 5
+			}).sort({createTime: "desc"}).exec(function(err, peopleList) {
+				if (!err) {
+					result.list = peopleList;
+					result.page = page + 1;
+					result.total = total;
+					result.status = 200;
+					result.response = "find lists";
+					//要在收到回执后在返回result
+					res.send(result);
+				} else {
+					// 出现错误的处理
+					res.status(502).send('may have a server error');
+				}
+			});
+		});
+	}
+}
 exports.editProject = {
     method: 'post',
     path: '/admin/project/:pid/edit',
@@ -29,6 +68,7 @@ exports.editProject = {
 		var updatePj = clearNullObj.call({
             name: req.body.name,
             information: req.body.information,
+			nowStatus: req.body.nowStatus
         });
 		if(req.body.createTime && req.body.createTime.match(/\d{4}-\d{2}-\d{2}/g))
 			updatePj.createTime = new Date(req.body.createTime);

@@ -7,7 +7,7 @@ const PERMISSION = exports.PERMISSION = {
 	AUDIT: 2,
 	PROJECT_AUDIT: 3,
 	ADMIN: 777,
-
+	READY_CHECK:-1
 }
 var usrSchema = new mongoose.Schema({
     name: {
@@ -28,7 +28,6 @@ var usrSchema = new mongoose.Schema({
 	},
 	psw: {
 		type: String
-
 	},
 	permission: {
 		type: Number,

@@ -47,7 +47,8 @@ import {
     fetchData
 } from "./util/ajax.js"
 import {
-    getCookie
+    getCookie,
+	delCookie
 } from "./util/cookie.js"
 import {
     ProjectCreate,
@@ -76,7 +77,8 @@ import {
 	AdminProjectModify,
 	AdminUsrChecker,
 	AdminLogin,
-	AdminLogined
+	AdminLogined,
+	AdminUsrVal
 } from './components/admin.jsx'
 
 import {
@@ -142,13 +144,20 @@ const App = React.createClass({
     },
 
     render() {
-        let usrcon;
+        let loginOut = function(){
+			delCookie('logined');
+			this.setState({
+				logined: false
+			});
+		}
+		let usrcon;
         // 登录状态下切换显示名字
         if (!this.state.logined) {
             usrcon = <Login />;
         } else {
-            usrcon = <span>{this.state.name}</span>
+            usrcon = <span onClick={loginOut.bind(this)}>{this.state.name}</span>
         }
+
         // add an offset for main body in order to make it have some blank to nav bar
         const bodyCss = {
             'marginTop': '90px'
@@ -257,6 +266,7 @@ render((
 			<Router path="logined" component={AdminLogined}>
 				<Router path="projectCheck" component={AdminProjectChecker}/>
 				<Router path="usrCheck" component={AdminUsrChecker}/>
+				<Router path="usrVal" component={AdminUsrVal}/>
 				<Router path="AdminProjectModify" component={AdminProjectModify}/>
 			</Router>
 			<Router path="login" component={AdminLogin}></Router>

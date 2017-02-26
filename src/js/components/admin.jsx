@@ -44,6 +44,11 @@ import {
 import {
     json
 } from "../util/fetchUtil.js"
+import {
+    getCookie,
+	delCookie
+} from "../util/cookie.js"
+
 
 class InputButton extends React.Component {
     constructor(props) {
@@ -141,6 +146,10 @@ export class AdminLogined extends React.Component {
 		super(props);
 	}
 	render(){
+		let loginOut = function(){
+			delCookie('admin');
+			hashHistory.push('/admin/login');
+		}
 		fetchData('adminTokenCheck')
 			.then(json, (e) => {
 				return Promise.reject(e);
@@ -165,6 +174,10 @@ export class AdminLogined extends React.Component {
 								<p><a href="#/admin/logined/usrCheck">用户个人信息变更</a></p>
 							</Panel>
 							<Panel header="审查" eventKey="3">
+								<p><a href="#/admin/logined/usrVal">用户列表</a></p>
+							</Panel>
+							<Panel header="当前用户操作" eventKey="3">
+								<p><a onClick={loginOut.bind(this)}>登出</a></p>
 							</Panel>
 						</Accordion>
 					</Col>
@@ -177,6 +190,18 @@ export class AdminLogined extends React.Component {
 	}
 }
 
+export class AdminUsrVal extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+	render(){
+		return(
+			<div>
+				
+			</div>
+		)
+	}
+}
 export class AdminProjectChecker extends React.Component {
 	constructor(props) {
 		super(props);
@@ -231,27 +256,51 @@ export class AdminProjectChecker extends React.Component {
 			});
 
 	}
+	editProject(){
+		var form = new FormData(this.refs.process);
+		fetchData('adminEditProject',{
+				body: form,
+				data: [this.state.pid]
+			})
+			.then(json, (e) => {
+				return Promise.reject(e);
+			})
+			.then((data) => {
+				this.setState({
+					data: {},
+					dataInfoShow:false
+				});
+			},(code)=>{
+			})
+			.catch((e) => {
+				console.log(e);
+			});
+
+	}
 	render(){
 		let nowStatus = this.state.dataInfoShow?(
-				<FormGroup controlId={this.props.name}>
-					<Col componentClass={ControlLabel} sm={2}>
-						项目的进度
-					</Col>
-					<Col sm={10}>
-						<FormControl componentClass="select" defaultValue={this.state.status} placeholder={this.props.label}>
-							<option key={1} value="0">项目创建阶段</option>
-							<option key={2} value="1">创建审核阶段</option>
-							<option key={3} value="2">创建审核失败</option>
-							<option key={4} value="3">答辩阶段</option>
-							<option key={5} value="4">答辩失败</option>
-							<option key={6} value="5">进行中</option>
-							<option key={7} value="6">终止审核</option>
-							<option key={8} value="7">终止阶段</option>
-							<option key={9} value="8">中期检查未通过</option>
-							<option key={10} value="9">项目结题中</option>
-						</FormControl>
-					</Col>
-				</FormGroup>
+				<Row>
+					<form ref="process">
+						<Col  componentClass={ControlLabel} sm={2}>
+							项目的进度
+						</Col>
+						<Col sm={10}>
+							<FormControl name="nowStatus" componentClass="select" defaultValue={this.state.status} placeholder={this.props.label}>
+								<option key={1} value="0">项目创建阶段</option>
+								<option key={2} value="1">创建审核阶段</option>
+								<option key={3} value="2">创建审核失败</option>
+								<option key={4} value="3">答辩阶段</option>
+								<option key={5} value="4">答辩失败</option>
+								<option key={6} value="5">进行中</option>
+								<option key={7} value="6">终止审核</option>
+								<option key={8} value="7">终止阶段</option>
+								<option key={9} value="8">中期检查未通过</option>
+								<option key={10} value="9">项目结题中</option>
+							</FormControl>
+						</Col>					
+					</form>
+					<Button bsStyle="primary" onClick={this.editProject.bind(this)}>提交</Button>
+				</Row>
 		):'';
 		let tips = this.state.sidIllagel?(<Row><Alert bsStyle="danger">项目id必须是数字</Alert></Row>):'';
 		let info = this.state.infoShow?( <Row><Alert bsStyle="danger">查无此id</Alert></Row>):'';
