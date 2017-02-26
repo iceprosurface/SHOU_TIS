@@ -90,6 +90,23 @@ import {
 // pre-defined params use
 updateData();
 
+// 对默认的时间格式作出扩展
+Date.prototype.Format = function (fmt) { //author: meizz 
+    var o = {
+        "M+": this.getMonth() + 1, //月份 
+        "d+": this.getDate(), //日 
+        "h+": this.getHours(), //小时 
+        "m+": this.getMinutes(), //分 
+        "s+": this.getSeconds(), //秒 
+        "q+": Math.floor((this.getMonth() + 3) / 3), //季度 
+        "S": this.getMilliseconds() //毫秒 
+    };
+    if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+    for (var k in o)
+    if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+    return fmt;
+}
+
 const Check = React.createClass({
 	getInitialState() {
 		return {};
@@ -149,6 +166,7 @@ const App = React.createClass({
 			this.setState({
 				logined: false
 			});
+			hashHistory.push("/");
 		}
 		let usrcon;
         // 登录状态下切换显示名字
@@ -258,6 +276,24 @@ const Test = React.createClass({
 	}
 });
 
+const BadPath = React.createClass({
+    render() {
+        return (
+            <div>
+				<h2>当前路径未能查找到</h2>
+			</div>
+        )
+    }
+})
+const NotLogin = React.createClass({
+	render() {
+        return (
+            <div>
+				<h2>尚未登录</h2>
+			</div>
+        )
+    }
+})
 render((
     <Router history={hashHistory}>
 		<Router path="/checker" component={Check}>
@@ -294,6 +330,10 @@ render((
 			  <Route path="show" component={NoticeShow}/>
 		  </Route>
 		  <Route path="test" component={Test}>
+		  </Route>
+		  <Route path="NotLogin" component={NotLogin}>
+		  </Route>
+		  <Route path="*" component={BadPath}>
 		  </Route>
 		</Route>
 	</Router>

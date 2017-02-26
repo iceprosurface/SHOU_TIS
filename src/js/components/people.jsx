@@ -4,44 +4,45 @@
  * ****************************/
 import React from 'react'
 import {
-    hashHistory
+	hashHistory
 } from 'react-router';
 import {
 	TableParser
 } from '../components/TableParser.jsx';
 import {
 	Button,
+	Alert,
 	Table,
-    Grid,
-    Col,
-    Row,
-    ListGroupItem,
-    ListGroup,
+	Grid,
+	Col,
+	Row,
+	ListGroupItem,
+	ListGroup,
 	Modal,
 	ModalHeader,
 	ModalTitle,
 	ModalFooter,
 } from "react-Bootstrap"
 import {
-    Input,
-    Textarea,
-    FileInput,
-    CheckBoxs,
+	Input,
+	Textarea,
+	FileInput,
+	CheckBoxs,
 	Select
 } from "../components/formItems.jsx"
 import {
-    fetchData
+	fetchData
 } from "../util/ajax.js"
 import {
-    json
+	json
 } from "../util/fetchUtil.js"
 
 export class PeopleNav extends React.Component {
 	constructor(props) {
 		super(props);
 	}
-	render(){
-		return(
+	render() {
+		return (
 			<Grid>
 				<Row>
 					<Col xs={6} md={3}>
@@ -64,7 +65,7 @@ export class PeopleInfo extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			list:{},
+			list: {},
 			show: false,
 			warning: false,
 			modalData: []
@@ -72,21 +73,21 @@ export class PeopleInfo extends React.Component {
 		// 
 		this.initData();
 	}
-	initData(){
-        fetchData('myInfo')
-            .then(json, (e) => {
-                return Promise.reject(new Error(e));
-            })
-            .then((data) => {
+	initData() {
+		fetchData('myInfo')
+			.then(json, (e) => {
+				return Promise.reject(new Error(e));
+			})
+			.then((data) => {
 				this.setState({
-					list:data.list	
+					list: data.list
 				});
 			})
-			.catch(function(error){
+			.catch(function (error) {
 				console.warn(error);
 			});
 	}
-	editAge(value){
+	editAge(value) {
 		var data = [
 			{
 				elem: Input,
@@ -95,12 +96,12 @@ export class PeopleInfo extends React.Component {
 				value: this.state.list.age,
 				required: true,
 				disabled: true
-			},{
+			}, {
 				elem: Input,
 				validate: "^\\d{2}$",
 				name: "age",
 				label: "原年龄",
-				tips:"年龄必须填写，且必须是2位整数",
+				tips: "年龄必须填写，且必须是2位整数",
 				required: true,
 			}
 		];
@@ -109,13 +110,13 @@ export class PeopleInfo extends React.Component {
 			modalData: data
 		});
 	}
-    onSubmitFn(form) {
-        var form = new FormData(form);
+	onSubmitFn(form) {
+		var form = new FormData(form);
 		fetchData("userAgeEdit", {
 			body: form,
-		}).then(json, function(code) {
-			if(parseInt(code.message) == 401){
-				this.setState({warning: true});
+		}).then(json, function (code) {
+			if (parseInt(code.message) == 401) {
+				this.setState({ warning: true });
 			}
 			return Promise.reject();
 		}).then((data) => {
@@ -125,17 +126,19 @@ export class PeopleInfo extends React.Component {
 			});
 		});
 	}
-	render(){
+	render() {
 		let rows = [];
 		let usrInfo = this.state.list;
 		let data = this.state.modalData;
-		let close = ()=> this.setState({ show:false});
+		let close = () => this.setState({ show: false });
 		let warning = this.state.warning ? (
 			<Alert bsStyle="danger">
 				<p>你的id可能是重复值，如果确信你的id值是独立的，请联系管理员解决</p>
 			</Alert>
-			): '';
-		return(
+		) : '';
+		let permission = this.state.list.permission == "-1"?"待审核人员":["游客","项目管理者","审查者","项目管理者，审查者"][this.state.list.permission];
+		permission = permission? permission:"管理员";
+		return (
 			<div>
 				<Table>
 					<tbody>
@@ -151,7 +154,7 @@ export class PeopleInfo extends React.Component {
 						</tr>
 						<tr>
 							<td>用户权限</td>
-							<td>{this.state.list.permission}</td>
+							<td>{permission}</td>
 							<td><Button bsStyle="primary" disabled>修改</Button></td>
 						</tr>
 						<tr>
@@ -172,12 +175,12 @@ export class PeopleInfo extends React.Component {
 					</Modal.Header>
 					<Modal.Body>
 						{warning}
-						<TableParser datas={data} onSubmitFn={this.onSubmitFn.bind(this)}/>
+						<TableParser datas={data} onSubmitFn={this.onSubmitFn.bind(this)} />
 					</Modal.Body>
 					<Modal.Footer>
 						<Button onClick={close}>Close</Button>
 					</Modal.Footer>
-				</Modal>	
+				</Modal>
 			</div>
 		)
 	}
@@ -187,11 +190,29 @@ export class PeopleSecret extends React.Component {
 	constructor(props) {
 		super(props);
 	}
-	render(){
-		return(
+	checkUser() {
+		// 审查者用户的申请
+
+	}
+	nomalUser() {
+		// 普通用户的申请
+	}
+	changePass() {
+
+	}
+	render() {
+		return (
 			<div>
-				<hr/>
-					<Button bsStyle="primary">修改密码</Button>
+				<h4>密码安全</h4>
+				<hr />
+				<Button bsStyle="primary" onClick={this.changePass.bind(this)}>修改密码</Button>
+				<br />
+				<br />
+				<h4>用户申请</h4>
+				<Alert>用户申请是指申请基本的用户使用权限包括创建项目等等，一个用户可以是普通用户也可以是一个审查者</Alert>
+				<hr />
+				<Button bsStyle="primary" onClick={this.nomalUser.bind(this)}>提交用户申请</Button>
+				<Button bsStyle="primary" onClick={this.checkUser.bind(this)}>提交审查者申请</Button>
 			</div>
 		)
 	}

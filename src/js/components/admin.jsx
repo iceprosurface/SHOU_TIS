@@ -176,7 +176,7 @@ export class AdminLogined extends React.Component {
 							<Panel header="审查" eventKey="3">
 								<p><a href="#/admin/logined/usrVal">用户列表</a></p>
 							</Panel>
-							<Panel header="当前用户操作" eventKey="3">
+							<Panel header="当前用户操作" eventKey="4">
 								<p><a onClick={loginOut.bind(this)}>登出</a></p>
 							</Panel>
 						</Accordion>
