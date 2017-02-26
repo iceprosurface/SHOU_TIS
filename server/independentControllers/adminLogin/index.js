@@ -1,7 +1,7 @@
-const usr = require(global.APP_PATH + '/model/usr');
+const usr = require('../../model/usr');
 const PERMISSION = usr.PERMISSION;
-const checks = require(global.APP_PATH + '/lib/tokenCheck');
-const conf = require(global.APP_PATH + '/conf.js');
+const checks = require('../../lib/tokenCheck');
+const conf = require('../../conf.js');
 const jwt = require('jsonwebtoken');
 
 exports.login = {

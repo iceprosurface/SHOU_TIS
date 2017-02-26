@@ -1,12 +1,12 @@
-const usr = require(global.APP_PATH + '/model/usr');
-const pj = require(global.APP_PATH + '/model/project.js');
-const checks = require(global.APP_PATH + '/lib/tokenCheck');
-const conf = require(global.APP_PATH + '/conf.js');
+const usr = require('../../model/usr');
+const pj = require('../../model/project.js');
+const checks = require('../../lib/tokenCheck');
+const conf = require('../../conf.js');
 const PERMISSION = usr.PERMISSION;
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
-const clearNullObj = require(global.APP_PATH + '/lib/common.js').clearNullObj;
-const tansObjToName = require(global.APP_PATH + '/lib/common.js').tansObjToName;
+const clearNullObj = require('../../lib/common.js').clearNullObj;
+const tansObjToName = require('../../lib/common.js').tansObjToName;
 
 exports.before = function(req, res, next) {
     if (checks.checkAdminToken(req, res) != checks.TOKEN_STATUS.OK) {

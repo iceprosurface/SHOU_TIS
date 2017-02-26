@@ -1,12 +1,12 @@
-const pj = require(global.APP_PATH + '/model/project.js');
-const usr = require(global.APP_PATH + '/model/usr.js');
+const pj = require('../../model/project.js');
+const usr = require('../../model/usr.js');
 const PERMISSION = usr.PERMISSION;
-const checks = require(global.APP_PATH + '/lib/tokenCheck');
-const conf = require(global.APP_PATH + '/conf.js');
+const checks = require('../../lib/tokenCheck');
+const conf = require('../../conf.js');
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
-const clearNullObj = require(global.APP_PATH + '/lib/common.js').clearNullObj;
-const tansObjToName = require(global.APP_PATH + '/lib/common.js').tansObjToName;
+const clearNullObj = require('../../lib/common.js').clearNullObj;
+const tansObjToName = require('../../lib/common.js').tansObjToName;
 
 // 如果需要输出的名字，可以强制更改输出名字为当前指定名字
 //exports.name = 'project';

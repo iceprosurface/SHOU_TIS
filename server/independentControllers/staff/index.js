@@ -1,11 +1,11 @@
-const pj = require(global.APP_PATH + '/model/project.js');
+const pj = require('../../model/project.js');
 const staff = pj.staff;
-const usr = require(global.APP_PATH + '/model/usr.js');
-const checks = require(global.APP_PATH + '/lib/tokenCheck');
-const conf = require(global.APP_PATH + '/conf.js');
+const usr = require('../../model/usr.js');
+const checks = require('../../lib/tokenCheck');
+const conf = require('../../conf.js');
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
-const clearNullObj = require(global.APP_PATH + '/lib/common.js').clearNullObj;
+const clearNullObj = require('../../lib/common.js').clearNullObj;
 
 //exports.name = 'staff';
 

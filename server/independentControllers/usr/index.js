@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
-const usr = require(global.APP_PATH + '/model/usr');
-const checks = require(global.APP_PATH + '/lib/tokenCheck');
-const conf = require(global.APP_PATH + '/conf.js');
+const usr = require('../../model/usr');
+const checks = require('../../lib/tokenCheck');
+const conf = require('../../conf.js');
 //如果需要的话可以使用下面一种方式强制更改命名，但是不推荐
 //原因是再设计mvc的时候是通过文件名区分控制器的，如果擅自改动的话不同文件夹内容的
 //控制器无法准确的识别出内容
