@@ -192,7 +192,7 @@ export class PeopleSecret extends React.Component {
 	}
 	checkUser() {
 		// 审查者用户的申请
-
+		
 	}
 	nomalUser() {
 		// 普通用户的申请

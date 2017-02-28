@@ -147,6 +147,18 @@ const fetchList = {
     noticeList: {
         url: urlTemplate `/notices/list/page/${0}`
     },
+
+    //以下是针对审查者页面是全部ajax请求列表
+    // 由于存在permission所以只需要用正常登陆的login即可
+    checkerTokenLogin: {
+        url: urlTemplate `/login/check/token`
+    },
+    checkerLogin: {
+        url: urlTemplate `/login/checker/check`,
+        option: {
+            method: 'POST'
+        }
+    }
 };
 
 // 传输数据前需要对option添加option.body

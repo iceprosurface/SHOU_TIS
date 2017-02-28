@@ -428,7 +428,7 @@ export class ProjectList extends React.Component {
 					<td>{list[i].pid}</td>
 					<td>{list[i].name}</td>
 					<td>{list[i].createTime?new Date(list[i].createTime).Format("yyyy-MM-dd"):"-"}</td>
-					<td>{list[i].endTime?list[i].endTime:"-"}</td>
+					<td>{list[i].endTime?new Date(list[i].Format("yyyy-MM-dd").endTime):"-"}</td>
 					<td>{this.calculatedStatus(list[i].nowStatus,list[i])}</td>
 					<td>
 						{operation}

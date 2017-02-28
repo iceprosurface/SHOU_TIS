@@ -40,8 +40,8 @@ exports.tokenLoginForCher = {
                 // TODO: 建议添加一个合适token组件来验证而不是每次手动验证
                 // 先decoded解码在使用
                 let decoded = jwt.verify(req.cookies.logined, conf.tokenSecret);
-                if(req.session.permission != PERMISSION.AUDIT || req.session.permission != PROJECT_AUDIT){
-                    res.status(401).send({
+                if(req.session.logined.permission != PERMISSION.AUDIT && req.session.logined.permission != PERMISSION.PROJECT_AUDIT){
+                    res.status(402).send({
                         name: decoded.usrname,
                         respond: 'permision deny',
                         status: 200
@@ -142,6 +142,68 @@ exports.tokenLoginCheck = {
 	}
 }
 
+// 登录后可以在session中访问到login.usrname以及usrObjId
+exports.nomalLoginForCheck = {
+    method: 'post',
+    path: '/login/checker/check',
+    fn: function(req, res, next) {
+        // 正常登陆
+        if (!req.body) res.status(400).send({
+            respond: 'this is not allow to input null',
+            status: 400
+        });
+        var loginInfo = {
+            name: req.body.usr,
+            psw: req.body.psw
+        };
+        usr.fn.findOne(loginInfo)
+            .exec((err, doc) => {
+                if (err) {
+                    res.status(502).send({
+                        respond: 'there is a server error ',
+                        status: 502
+                    });
+                    console.log(err);
+                    return;
+                }
+                if (doc) {
+                    if(doc.permission != PERMISSION.AUDIT && doc.permission != PERMISSION.PROJECT_AUDIT){
+                        res.status(402).send({
+                            respond: 'permision deny',
+                            status: 402
+                        })
+                        return;
+                    }
+                    let token = jwt.sign({
+                        usrname: doc.name,
+						age: doc.age
+                    }, conf.tokenSecret);
+                    //logined 
+                    res.cookie('logined', token, {
+                        maxAge: 3600 * 1000,
+                    });
+                    // 储存session
+                    req.session.logined = {
+                        usrname: doc.name,
+						age: doc.age,
+						sid: doc.sid,
+						permission: doc.permission
+                    };
+					req.session.usrObjId = doc._id;
+                    res.status(200).send({
+                        respond: 'this is success',
+                        name: doc.name,
+                        status: 200
+                    });
+                } else {
+                    res.status(402).send({
+                        respond: 'password or usrname error',
+                        status: 402
+                    });
+                }
+            });
+    }
+}
 
 // 登录后可以在session中访问到login.usrname以及usrObjId
 exports.nomalLoginCheck = {

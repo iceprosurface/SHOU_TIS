@@ -50,7 +50,7 @@ import {
 } from "../util/cookie.js"
 
 
-class InputButton extends React.Component {
+export class InputButton extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -119,7 +119,7 @@ export class AdminLogin extends React.Component {
 			<div>
 				<Modal show={this.state.showLogin}>
 					<Modal.Header>
-						<Modal.Title>登录</Modal.Title>
+						<Modal.Title>后台登录</Modal.Title>
 					</Modal.Header>
 					<Modal.Body>
 						<div className="well" style={wellStyles}>
