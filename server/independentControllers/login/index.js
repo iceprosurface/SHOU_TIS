@@ -40,7 +40,7 @@ exports.tokenLoginForCher = {
                 // TODO: 建议添加一个合适token组件来验证而不是每次手动验证
                 // 先decoded解码在使用
                 let decoded = jwt.verify(req.cookies.logined, conf.tokenSecret);
-                if(req.session.logined.permission != PERMISSION.AUDIT && req.session.logined.permission != PERMISSION.PROJECT_AUDIT){
+                if(req.session.logined && req.session.logined.permission != PERMISSION.AUDIT && req.session.logined.permission != PERMISSION.PROJECT_AUDIT){
                     res.status(402).send({
                         name: decoded.usrname,
                         respond: 'permision deny',

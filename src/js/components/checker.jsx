@@ -30,6 +30,7 @@ import {
     Glyphicon,
     Alert,
 	wellStyles,
+    Pagination
 } from "react-Bootstrap"
 import {
     Input,
@@ -141,6 +142,7 @@ export class CheckerLogined extends React.Component {
 								<p><a href="#/checker/logined/usr">用户游客=>项目管理者审批</a></p>
 								<p><a href="#/checker/logined/mid">中期检查审批</a></p>
 								<p><a href="#/checker/logined/end">结题审批</a></p>
+								<p><a href="#/checker/logined/processEnd">项目终止审批</a></p>
 							</Panel>
 							<Panel header="当前用户操作" eventKey="4">
 								<p><a onClick={loginOut.bind(this)}>登出</a></p>
@@ -159,6 +161,9 @@ export class CheckerLogined extends React.Component {
 export class ProjectCheck extends React.Component {
     constructor(props) {
         super(props);
+		this.state = {
+			dangerMode: false
+		}
     }
 	render(){
 		return(
@@ -171,10 +176,94 @@ export class ProjectCheck extends React.Component {
 export class UsrCheck extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {
+            page: 1
+        }
+        this.initData();
+    }
+	checkData(number,bool,type){
+		var form = new FormData();
+		form.append("result",bool);
+		fetchData('checkerUsr',{
+			data:[number,type],
+			body:form
+		})
+            .then(json, (e) => {
+                return Promise.reject(new Error(e));
+            })
+            .then((data) => {
+				this.initData();
+			})
+			.catch(function(error){
+				console.warn(error);
+			});
+	}
+    initData(){
+		// 获取相关数据
+        fetchData('checkUList',{data:[this.state.page]})
+            .then(json, (e) => {
+                return Promise.reject(new Error(e));
+            })
+            .then((data) => {
+				this.setState({
+					list:data.list,
+                    total:data.total,
+					page:data.page
+				});
+			})
+			.catch(function(error){
+				console.warn(error);
+			});
+	}
+	handleSelect(eventKey) {
+		// hashHistory.push(`/project/list/${eventKey}`);
+		// this.initData(eventKey);
+        this.setState({
+            page: eventKey,
+        });
+        this.initData();
     }
 	render(){
+        let rows = [];
+        let list;
+        if(this.state.list){
+            list = this.state.list;
+            for(let i = 0 ;i < list.length ; i++){
+                rows.push(	
+                    <tr key={"user-list-" + i.toString()}>
+                        <td>{list[i].name}</td>
+                        <td>{list[i].sid}</td>
+                        <td>{list[i].age}</td>
+                        <td>
+                            <Button bsStyle="primary" onClick={()=>this.checkData(list[i].sid,true,0)}>通过项目管理者</Button>
+                            <Button disabled={!this.state.dangerMode} bsStyle="warning" onClick={()=>this.checkData(list[i].sid,true,1)}>通过审查者权限</Button>
+                            <Button disabled={!this.state.dangerMode} bsStyle="warning" onClick={()=>this.checkData(list[i].sid,true,2)}>通过双重权限</Button>
+                            <Button bsStyle="danger" onClick={()=>this.checkData(list[i].sid,false,0)}>不通过</Button>
+                        </td>
+                    </tr>
+                );
+            }
+        }
+        let warn = !this.state.dangerMode ? (<Alert bsStyle="warning" >警告：审查者的权限水平相当高，在默认情况下请不要随意给予用户审查者权限<Button onClick={()=>this.setState({dangerMode:true})}  bsStyle="danger" bsSize="xsmall">开启</Button></Alert>):(<Alert bsStyle="danger">警告：您现在开启了赋予危险权限的模式<Button bsStyle="primary" bsSize="xsmall" onClick={()=>this.setState({dangerMode:false})}>关闭</Button></Alert>);
 		return(
-            <div>UsrCheck
+            <div>
+				<h3>用户申请</h3>
+				{warn}
+				<hr/>
+                <Table>
+					<thead>
+						<tr>
+							<th>名字</th>
+							<th>id</th>
+							<th>年龄</th>
+							<th>操作</th>
+						</tr>
+					</thead>
+					<tbody>
+						{rows}
+					</tbody>
+				</Table>
+                <Pagination bsSize="small" items={Math.ceil(this.state.total / 5)} maxButtons={5} activePage={this.state.page} onSelect={this.handleSelect.bind(this)} />
             </div>
 		)
 	}

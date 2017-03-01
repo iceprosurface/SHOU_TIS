@@ -196,6 +196,16 @@ export class PeopleSecret extends React.Component {
 	}
 	nomalUser() {
 		// 普通用户的申请
+		fetchData("usrCheckerPut")
+			.then(json, (e) => {
+				return Promise.reject(new Error(e));
+			})
+			.then((data) => {
+				hashHistory.push("people/info");
+			})
+			.catch(function (error) {
+				console.warn(error);
+			});
 	}
 	changePass() {
 
@@ -209,10 +219,9 @@ export class PeopleSecret extends React.Component {
 				<br />
 				<br />
 				<h4>用户申请</h4>
-				<Alert>用户申请是指申请基本的用户使用权限包括创建项目等等，一个用户可以是普通用户也可以是一个审查者</Alert>
+				<Alert>用户申请是指申请基本的用户使用权限包括创建项目等等，一个用户可以是普通用户也可以是一个审查者,这取决于审查者赋予你的权限</Alert>
 				<hr />
-				<Button bsStyle="primary" onClick={this.nomalUser.bind(this)}>提交用户申请</Button>
-				<Button bsStyle="primary" onClick={this.checkUser.bind(this)}>提交审查者申请</Button>
+				<Button bsStyle="primary" onClick={this.nomalUser.bind(this)}>提交申请</Button>
 			</div>
 		)
 	}

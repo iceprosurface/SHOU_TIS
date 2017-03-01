@@ -404,6 +404,20 @@ export class ProjectList extends React.Component {
 		hashHistory.push(`/project/list/${eventKey}`);
 		this.initData(eventKey);
     }
+	pChecker(pid,type){
+		fetchData("projectCheck",{
+			data: [pid,type]
+		})
+			.then(json, (e) => {
+                return Promise.reject(new Error(e));
+            })
+            .then((data) => {
+				this.initData(this.state.page);
+			})
+			.catch(function(error){
+				console.warn(error);
+			});
+	}
     render() {
 		let rows = [];
 		let list = this.state.list;
@@ -411,13 +425,18 @@ export class ProjectList extends React.Component {
 			let operation;
 			let status = parseInt(list[i].nowStatus);
 			if(status == 0 ){
-				operation =  ( <Button bsStyle="primary" onClick={()=>hashHistory.push("/project/manage/edit/" + list[i].pid)}>修改基本信息</Button>);
+				operation =  ( 
+					<div>
+						<Button bsStyle="primary" onClick={()=>hashHistory.push("/project/manage/edit/" + list[i].pid)}>修改基本信息</Button>
+						<Button bsStyle="primary" onClick={()=>this.pChecker(list[i].pid,"new")}>申报项目</Button>
+					</div>
+				);
 			}else if(status == 5 ){
 				operation = (
 					<div>
 						<Button bsStyle="primary" onClick={()=>hashHistory.push("/project/manage/" + list[i].pid + "/progress/list/1")}>查询项目进度</Button>
-						<Button bsStyle="primary" onClick={()=>hashHistory.push("/project/manage/edit/" + list[i].pid)}>提交中期检查</Button>
-						<Button bsStyle="primary" onClick={()=>hashHistory.push("/project/manage/edit/" + list[i].pid)}>申请结题</Button>
+						<Button bsStyle="primary" onClick={()=>this.pChecker(list[i].pid,"process")}>终止项目</Button>
+						<Button bsStyle="primary" onClick={()=>this.pChecker(list[i].pid,"end")}>申请结题</Button>
 					</div>
 					)
 			}else{
@@ -438,6 +457,7 @@ export class ProjectList extends React.Component {
 		}	
         return (
             <div>
+				<Alert bsStyle="danger">警告：中期检查报告将会在进度提交中提交。</Alert>
 				<Table>
 					<thead>
 						<tr>
@@ -453,7 +473,7 @@ export class ProjectList extends React.Component {
 						{rows}
 					</tbody>
 				</Table>
-				<Pagination bsSize="small" items={Math.ceil(this.state.total / 5)} maxButtons={5} activePage={this.state.page} onSelect={this.handleSelect.bind(this)} />
+				<Pagination bsSize="small" items={Math.ceil(this.state.total / 5)} maxButtons={5} activePage={parseInt(this.state.page)} onSelect={this.handleSelect.bind(this)} />
 			</div>
         )
     }

@@ -71,6 +71,13 @@ const fetchList = {
             method: 'PUT'
         }
     },
+    // project 的项目提交
+    projectCheck: {
+        url: urlTemplate `/project/${0}/check/${1}`,
+        option: {
+            method: 'PUT'
+        }
+    },
 	// 对项目的某一个staff作出修改
 //	projectEditStaff: {
 //		url: urlTemplate `/project/${0}/staff/`,
@@ -114,6 +121,12 @@ const fetchList = {
 			method: 'POST'
 		}
 	},
+    usrCheckerPut: {
+        url: urlTemplate `/usr/checkers`,
+        option: {
+			method: 'PUT'
+		}
+    },
 	// admin 页面的登录功能
 	adminLogin: {
 		url: urlTemplate `/admin/login`,
@@ -155,6 +168,24 @@ const fetchList = {
     },
     checkerLogin: {
         url: urlTemplate `/login/checker/check`,
+        option: {
+            method: 'POST'
+        }
+    },
+    checkUList: {
+        url: urlTemplate `/check/user/page/${0}`
+    },
+    checkPList: {
+        url: urlTemplate `/check/project/page/${0}/type/${1}`
+    },
+    checkerUsr: {
+        url: urlTemplate `/check/user/${0}/${1}`,
+        option: {
+            method: 'POST'
+        }
+    },
+    checkerProject: {
+        url: urlTemplate `/check/project/${0}`,
         option: {
             method: 'POST'
         }

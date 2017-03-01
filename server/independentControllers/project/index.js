@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 const clearNullObj = require('../../lib/common.js').clearNullObj;
 const tansObjToName = require('../../lib/common.js').tansObjToName;
+const PROJECT_STATUS = pj.PROJECT_STATUS;
 
 // 如果需要输出的名字，可以强制更改输出名字为当前指定名字
 //exports.name = 'project';
@@ -134,6 +135,7 @@ exports.updateProjectStaff = {
 
     }
 };
+
 // 创建一个项目的接口
 exports.create = {
     method: 'post',
@@ -189,3 +191,39 @@ exports.create = {
             });
     }
 };
+
+exports.check = {
+    method: 'put',
+    path: '/project/:pid/check/:type',
+    fn: function(req, res, next) {
+        var type = req.params.type;
+        var status;
+        switch(type){
+            case "new":
+                status = PROJECT_STATUS.BEGIN_LOCK;
+                break;
+            case "process":
+                status = PROJECT_STATUS.PROCESS_LOCK;
+                break;            
+            case "end":
+                status = PROJECT_STATUS.END_TERM;
+                break;
+            default:
+                res.status(403).send("params error");
+                return; 
+        }
+        pj.project.findOneAndUpdate({
+            pid:req.params.pid
+        },{
+            nowStatus: status
+        }).exec(function(err){
+            if(err){
+                console.log(err);
+                res.status(500).send("server unkonw error");
+            }
+            res.status(200).send("success");
+
+        });
+        // res.status(500).send("server unkonw error 2");
+    }
+}

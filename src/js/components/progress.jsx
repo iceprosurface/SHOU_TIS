@@ -131,7 +131,7 @@ export class ProgressList extends React.Component {
 			rows.push(	
 				<tr key={"project-list-" + i.toString()}>
 					<td>{list[i].name}</td>
-					<td>{list[i].createTime}</td>
+					<td>{new Date(list[i].createTime).Format("yyyy-MM-dd")}</td>
 					<td>
 						<Button bsStyle="primary">查看</Button>
 						{downloadButton}
