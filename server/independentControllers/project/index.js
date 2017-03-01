@@ -1,11 +1,13 @@
-const pj = require(global.APP_PATH + '/model/project.js');
-const usr = require(global.APP_PATH + '/model/usr.js');
-const checks = require(global.APP_PATH + '/lib/tokenCheck');
-const conf = require(global.APP_PATH + '/conf.js');
+const pj = require('../../model/project.js');
+const usr = require('../../model/usr.js');
+const PERMISSION = usr.PERMISSION;
+const checks = require('../../lib/tokenCheck');
+const conf = require('../../conf.js');
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
-const clearNullObj = require(global.APP_PATH + '/lib/common.js').clearNullObj;
-const tansObjToName = require(global.APP_PATH + '/lib/common.js').tansObjToName;
+const clearNullObj = require('../../lib/common.js').clearNullObj;
+const tansObjToName = require('../../lib/common.js').tansObjToName;
+const PROJECT_STATUS = pj.PROJECT_STATUS;
 
 // 如果需要输出的名字，可以强制更改输出名字为当前指定名字
 //exports.name = 'project';
@@ -27,23 +29,29 @@ exports.list = {
         // 保证page是一个整数
         var page = parseInt(req.params.page) ? parseInt(req.params.page) - 1 : 0;
         // 利用session查询
-        pj.project.find({
+		pj.project.count({
             adminUsrChief: ObjectId(req.session.usrObjId)
-        }, "name  createTime endTime adminUsr pid", {
-            skip: page * 20,
-            limit: 20
-        }).exec(function(err, projectList) {
-            if (!err) {
-                result.list = projectList;
-                result.status = 200;
-                result.response = "find lists";
-                //要在收到回执后在返回result
-                res.send(result);
-            } else {
-                // 出现错误的处理
-                res.status(502).send('may have a server error');
-            }
-        });
+		}, function (err, total) {
+			pj.project.find({
+				adminUsrChief: ObjectId(req.session.usrObjId)
+			}, "name nowStatus createTime endTime adminUsr pid", {
+				skip: page * 5,
+				limit: 5
+			}).sort({createTime: "desc"}).exec(function(err, projectList) {
+				if (!err) {
+					result.list = projectList;
+					result.page = page + 1;
+					result.total = total;
+					result.status = 200;
+					result.response = "find lists";
+					//要在收到回执后在返回result
+					res.send(result);
+				} else {
+					// 出现错误的处理
+					res.status(502).send('may have a server error');
+				}
+			});
+		});
     }
 };
 
@@ -97,7 +105,11 @@ exports.update = {
                 adminUsrChief: ObjectId(req.session.usrObjId)
             })
             .update(updatePj).then((err,doc) => {
-                res.send({status:200,response:'success',list:updatePj});
+				//if(err){
+				//	res.status(502).send({status:502,response:'error',errorCode:err.code});
+				//}else{
+					res.send({status:200,response:'success',list:updatePj});
+				//}
             });
 
     }
@@ -123,11 +135,20 @@ exports.updateProjectStaff = {
 
     }
 };
+
 // 创建一个项目的接口
 exports.create = {
     method: 'post',
     path: '/project/create',
     fn: function(req, res, next) {
+		console.log(req.session.logined.permission);
+		if( req.session.logined.permission < PERMISSION.PROJECT){
+			res.status(403).send({
+				response: "you are not allowed to create any project",
+				status: 403
+			})
+			return;
+		}
         // 创建者
 		console.log(req.session.logined);
         var mine = new pj.staff({
@@ -145,7 +166,11 @@ exports.create = {
         }
 		if(req.file){
 			projectObj["file"] = req.file.buffer;
-		}
+            projectObj.haveFile = true;
+		}else{
+            projectObj.haveFile = false;
+        }
+
         // 创建一个新的项目
         var newPj = new pj.project(projectObj);
         var result = {};
@@ -171,3 +196,39 @@ exports.create = {
             });
     }
 };
+
+exports.check = {
+    method: 'put',
+    path: '/project/:pid/check/:type',
+    fn: function(req, res, next) {
+        var type = req.params.type;
+        var status;
+        switch(type){
+            case "new":
+                status = PROJECT_STATUS.BEGIN_LOCK;
+                break;
+            case "process":
+                status = PROJECT_STATUS.PROCESS_LOCK;
+                break;            
+            case "end":
+                status = PROJECT_STATUS.END_TERM;
+                break;
+            default:
+                res.status(403).send("params error");
+                return; 
+        }
+        pj.project.findOneAndUpdate({
+            pid:req.params.pid
+        },{
+            nowStatus: status
+        }).exec(function(err){
+            if(err){
+                console.log(err);
+                res.status(500).send("server unkonw error");
+            }
+            res.status(200).send("success");
+
+        });
+        // res.status(500).send("server unkonw error 2");
+    }
+}

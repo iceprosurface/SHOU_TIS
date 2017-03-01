@@ -71,6 +71,13 @@ const fetchList = {
             method: 'PUT'
         }
     },
+    // project 的项目提交
+    projectCheck: {
+        url: urlTemplate `/project/${0}/check/${1}`,
+        option: {
+            method: 'PUT'
+        }
+    },
 	// 对项目的某一个staff作出修改
 //	projectEditStaff: {
 //		url: urlTemplate `/project/${0}/staff/`,
@@ -92,9 +99,100 @@ const fetchList = {
             method: 'PUT'
         }
     },
+	// 查询一个progressList
+	progressList: {
+		url: urlTemplate `/project/${0}/progress/list/page/${1}`,
+
+	},
+	// 创建一个progress
+	progressCreate: {
+		url: urlTemplate `/progress/project/${0}`,
+		option: {
+			method : 'POST'
+		}
+	},
+	// usr 页面的功能
+	myInfo: {
+		url: urlTemplate `/usr/info`
+	},
+	userAgeEdit: {
+		url: urlTemplate `/usr/info/Age/edit`,
+		option: {
+			method: 'POST'
+		}
+	},
+    usrCheckerPut: {
+        url: urlTemplate `/usr/checkers`,
+        option: {
+			method: 'PUT'
+		}
+    },
+	// admin 页面的登录功能
+	adminLogin: {
+		url: urlTemplate `/admin/login`,
+		option: {
+			method: 'POST'
+		}
+	},
+	// admin 页面的check
+	adminTokenCheck: {
+		url: urlTemplate `/admin/token/check`
+	},
+	adminGetProjectByPid: {
+		url: urlTemplate `/admin/project/${0}`
+	},
+	adminGetProjectStatusByPid: {
+		url: urlTemplate `/admin/project/${0}/status`
+	},
+	adminCheckUsr: {
+        url: urlTemplate `/admin/usr/check`,
+        method: 'POST'
+    },
+    adminGetUncheckUsr: {
+        url: urlTemplate `/admin/usr/uncheck`,
+    },
+	adminEditProject: {
+		url: urlTemplate `/admin/project/${0}/edit`,
+		option: {
+			method: 'POST'
+		}
+	},
     noticeList: {
         url: urlTemplate `/notices/list/page/${0}`
     },
+
+    //以下是针对审查者页面是全部ajax请求列表
+    // 由于存在permission所以只需要用正常登陆的login即可
+    checkerTokenLogin: {
+        url: urlTemplate `/login/check/token`
+    },
+    checkerLogin: {
+        url: urlTemplate `/login/checker/check`,
+        option: {
+            method: 'POST'
+        }
+    },
+    checkUList: {
+        url: urlTemplate `/check/user/page/${0}`
+    },
+    checkPList: {
+        url: urlTemplate `/check/project/page/${0}/type/${1}`
+    },
+    checkerUsr: {
+        url: urlTemplate `/check/user/${0}/${1}`,
+        option: {
+            method: 'POST'
+        }
+    },
+    checkerProject: {
+        url: urlTemplate `/check/project/${0}`,
+        option: {
+            method: 'PUT'
+        }
+    },
+    checkerProjectSingle: {
+        url: urlTemplate `/check/project/${0}`
+    },  
 };
 
 // 传输数据前需要对option添加option.body

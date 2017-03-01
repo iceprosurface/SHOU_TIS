@@ -2,7 +2,7 @@ function status(response) {
     if (response.status >= 200 && response.status < 300) {
         return Promise.resolve(response)
     } else {
-        return Promise.reject(new Error(response.statusText))
+        return Promise.reject(new Error(response.status))
     }
 }
 
@@ -11,7 +11,7 @@ function json(response) {
     if (contentType && contentType.indexOf("application/json") !== -1) {
         return response.json().then(function(json){return json});
 	} else {
-        console.log("Oops, we haven't got JSON!");
+        console.warn("this is not a JSON code");
     }
 }
 export {

@@ -97,16 +97,16 @@ module.exports = function(parent, options) {
     });
 	
 	// 载入不同于restful型的组件
-	fs.readdirSync(global.APP_PATH + '/independentControllers').forEach(function(name) {
-		if(!isDir(global.APP_PATH + '/independentControllers/' + name)) return;
-		var obj = require(global.APP_PATH + '/independentControllers/' + name);
-        var name = obj.name || name;
-        var app = express();
-		for(let key in obj) {
-			app[obj[key].method](obj[key].path,obj[key].fn);
-			islog && console.log('     %s %s -> %s', obj[key].method.toUpperCase(), obj[key].path, key);
-		}
-		//在全局方法中挂载
-		parent.use(app);
-	});
+	//fs.readdirSync(global.APP_PATH + '/independentControllers').forEach(function(name) {
+	//	if(!isDir(global.APP_PATH + '/independentControllers/' + name)) return;
+	//	var obj = require(global.APP_PATH + '/independentControllers/' + name);
+    //    var name = obj.name || name;
+    //    var app = express();
+	//	for(let key in obj) {
+	//		app[obj[key].method](obj[key].path,obj[key].fn);
+	//		islog && console.log('     %s %s -> %s', obj[key].method.toUpperCase(), obj[key].path, key);
+	//	}
+	//	//在全局方法中挂载
+	//	parent.use(app);
+	//});
 }

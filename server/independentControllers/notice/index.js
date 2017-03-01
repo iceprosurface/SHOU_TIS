@@ -1,13 +1,13 @@
 // nomal requirment
-const pj = require(global.APP_PATH + '/model/project.js');
-const notice = require(global.APP_PATH + '/model/notice.js').notice;
-const checks = require(global.APP_PATH + '/lib/tokenCheck');
-const conf = require(global.APP_PATH + '/conf.js');
+const pj = require('../../model/project.js');
+const notice = require('../../model/notice.js').notice;
+const checks = require('../../lib/tokenCheck');
+const conf = require('../../conf.js');
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
-const clearNullObj = require(global.APP_PATH + '/lib/common.js').clearNullObj;
+const clearNullObj = require('../../lib/common.js').clearNullObj;
 
-const tansListToName = require(global.APP_PATH + '/lib/common.js').tansListToName;
+const tansListToName = require('../../lib/common.js').tansListToName;
 
 // if need it can input other name
 //exports.name = 'invitation';

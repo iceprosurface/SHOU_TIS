@@ -3,6 +3,7 @@
 @import 'base';
 @import 'siderbar';
 @import 'loading';
+//@import 'admin';
 //boot的圆角去除
 .nav {
     border-radius: 4px;
@@ -25,3 +26,14 @@ button {
 .form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control, .select2-search input[type=text][disabled], .select2-search input[type=text][readonly], fieldset[disabled] .select2-search input[type=text]{
 	color: #000000;
 }
+
+.admin-content {
+	padding-top:20px;
+}
+
+@for $i from 1 through 10 {
+	ol.ol-pd#{$i * 5} {
+		padding-left: $i * 5px;
+	}
+}
+
