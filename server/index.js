@@ -54,7 +54,9 @@ app.use(session({
 }));
 
 require(__dirname + '/lib/controller')(app, {
+
 	islog: true
+
 });
 
 // 错误处理

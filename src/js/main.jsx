@@ -328,6 +328,28 @@ const NotLogin = React.createClass({
 		)
 	}
 })
+const Test = React.createClass({
+
+	submits(){
+		
+        var form = new FormData(this.refs.forms);
+		fetch("/file/upload", {method:"POST",body:form}).then(function(){
+		}).catch(function(e){
+			console.lod(e);
+		});
+	},
+	render() {
+		return(
+			<div>
+				<form ref="forms" method="post" enctype="multipart/form-data">
+					<input type="file" name="upload"/>
+				</form>
+				<button onClick={this.submits.bind(this)}>提交</button>
+			</div>
+		)
+	}
+});
+
 render((
 	<Router history={hashHistory}>
 		<Router path="/checker" component={Check}>
