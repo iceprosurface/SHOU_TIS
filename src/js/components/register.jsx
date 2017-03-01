@@ -77,7 +77,16 @@ export class Register extends React.Component {
             tips: "年龄必须是两位数字",
             required: true,
             psw: false
-        }];
+        },{
+            elem: Input,
+            validate: `^\\d{6,12}$`,
+            name: "sid",
+            label: "学号或者工号",
+            tips: "学号或者工号必须全部是数字",
+            required: true,
+            psw: false
+        }
+        ];
         const wellStyles = {
             maxWidth: 600,
             margin: '0 auto 10px'

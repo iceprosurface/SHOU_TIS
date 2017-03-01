@@ -39,6 +39,7 @@ var projectSchema = new mongoose.Schema({
         type: Schema.Types.ObjectId,
         ref: 'usr'
     },
+    haveFile: Boolean,
 	file: {
 		type: Buffer
 	},

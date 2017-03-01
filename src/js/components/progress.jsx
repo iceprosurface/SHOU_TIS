@@ -78,6 +78,15 @@ export class ProgressList extends React.Component {
 				tips:"进度名称必须填写",
 				required: true
 			},{
+				elem: Select,
+				name: "type",
+				label: "提交类别",
+				required: true,
+				values:{
+					"0": "常规提交",
+					"1": "中期检查"
+				}
+			},{
 				elem: Textarea,
 				name: "info",
 				label: "简略信息"

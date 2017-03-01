@@ -75,12 +75,18 @@ exports.create = {
 	path: '/progress/project/:pid',
 	fn: function (req, res, next) {
 		console.log("this is progress")
+		if( !(req.body.name && req.body.info && req.body.type) ){
+			res.status(403).send({status:403,response:"incorrect input"})
+			return;
+		}
+
 		var progressObj = {
 			name: req.body.name,
 			info: req.body.info,
 			from: parseInt(req.params.pid),
 			operator: req.session.usrObjId,
-			createTime: new Date()
+			createTime: new Date(),
+			type: req.body.type
 		}
 		// 存在文件则加载文件给予目标
 		if (req.file) {

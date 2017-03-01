@@ -187,9 +187,12 @@ const fetchList = {
     checkerProject: {
         url: urlTemplate `/check/project/${0}`,
         option: {
-            method: 'POST'
+            method: 'PUT'
         }
-    }
+    },
+    checkerProjectSingle: {
+        url: urlTemplate `/check/project/${0}`
+    },  
 };
 
 // 传输数据前需要对option添加option.body

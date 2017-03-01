@@ -159,15 +159,174 @@ export class CheckerLogined extends React.Component {
 }
 
 export class ProjectCheck extends React.Component {
-    constructor(props) {
+        constructor(props) {
         super(props);
+		// 1 代表创建分类， 3 代表答辩分类
 		this.state = {
-			dangerMode: false
+			mode: 1,
+			page:0,
+			detail: false,
+			details: {}
 		}
+		this.initData();
+    }
+	lookProject(sid){
+		fetchData('checkerProjectSingle',{
+			data:[sid]
+		})
+		.then(json, (e) => {
+                return Promise.reject(new Error(e));
+            })
+            .then((data) => {
+				this.setState({
+					detail: true,
+					details: data.list
+				});
+			})
+			.catch(function(error){
+				console.warn(error);
+			});
+	}
+	checkData(sid,bool){
+		var form = new FormData();
+		form.append("result",bool);
+		fetchData('checkerProject',{
+			data:[sid],
+			body: form
+		})
+		.then(json, (e) => {
+                return Promise.reject(new Error(e));
+            })
+            .then((data) => {
+				this.initData();
+			})
+			.catch(function(error){
+				console.warn(error);
+			});
+	}
+	download(_id){
+		window.location = `/check/project/${_id}/download`;
+	}
+	initData(){
+		// 获取相关数据
+        fetchData('checkPList',{
+			data:[this.state.page,this.state.mode]
+		})
+            .then(json, (e) => {
+                return Promise.reject(new Error(e));
+            })
+            .then((data) => {
+				this.setState({
+					list:data.list,
+                    total:data.total,
+					page:data.page
+				});
+			})
+			.catch(function(error){
+				console.warn(error);
+			});
+	}
+	handleSelect(eventKey) {
+		// hashHistory.push(`/project/list/${eventKey}`);
+		// this.initData(eventKey);
+        this.setState({
+            page: eventKey,
+        });
+        this.initData();
     }
 	render(){
+		let rows = [];
+        let list;
+        if(this.state.list){
+            list = this.state.list;
+            for(let i = 0 ;i < list.length ; i++){
+                rows.push(	
+                    <tr key={"user-list-" + i.toString()}>
+                        <td>{list[i].name}</td>
+                        <td>{list[i].pid}</td>
+                        <td>
+                            <Button bsStyle="primary" onClick={this.lookProject.bind(this,list[i].pid)}>查看</Button>
+                            <Button bsStyle="primary" onClick={()=>this.checkData(list[i].pid,true)}>通过</Button>
+                            <Button bsStyle="danger" onClick={()=>this.checkData(list[i].pid,false)}>不通过</Button>
+                        </td>
+                    </tr>
+                );
+            }
+        }
+		let close = ()=>this.setState({detail:false});
+		let details;
+		if(this.state.details){
+			let data = this.state.details;
+			 details = (
+				<div>
+					<Table>
+						<thead>
+							<tr>
+								<th>名字</th>
+								<th>值</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>pid</td>
+								<td>{data.pid}</td>
+							</tr>
+							<tr>
+								<td>name</td>
+								<td>{data.name}</td>
+							</tr>
+							<tr>
+								<td>information</td>
+								<td>{data.information}</td>
+							</tr>
+							<tr>
+								<td>createTime</td>
+								<td>{new Date(data.createTime).Format("yyyy-MM-dd")}</td>
+							</tr>
+							<tr>
+								<td>是否下载文件</td>
+								<td><Button bsStyle="primary" disabled={!data.haveFile} onClick={this.download.bind(this,data._id)}>下载文件</Button></td>
+							</tr>
+						</tbody>
+					</Table>
+				</div>
+			)
+		}
 		return(
-            <div>ProjectCheck
+            <div>
+				<h3>结题审批</h3>
+				{/* 这里一定要用this.state 而不是 setState 因为setState需要下一个周期才能响应，而这个周期结束时候以及使用initData刷新 */}
+				<Alert bsStyle="info">提示: 你可以选择其他的类别审批
+					<FormControl componentClass="select" onChange={(e)=>{this.state.mode=e.target.value;this.state.page=1;this.initData();}}>
+						<option value="1">初创阶段</option>
+						<option value="3">答辩阶段</option>
+					</FormControl>
+				</Alert>
+				<hr/>
+                <Table>
+					<thead>
+						<tr>
+							<th>名字</th>
+							<th>id</th>
+							<th>操作</th>
+						</tr>
+					</thead>
+					<tbody>
+						{rows}
+					</tbody>
+				</Table>
+                <Pagination bsSize="small" items={Math.ceil(this.state.total / 5)} maxButtons={5} activePage={this.state.page} onSelect={this.handleSelect.bind(this)} />
+								<Modal show={this.state.detail} onHide={close} container={this} aria-labelledby="contained-modal-title" >
+					<Modal.Header closeButton>
+						<Modal.Title id="contained-modal-title">详细信息</Modal.Title>
+					</Modal.Header>
+					<Modal.Body>
+						{details}
+					</Modal.Body>
+					<Modal.Footer>
+						<Button onClick={close}>Close</Button>
+					</Modal.Footer>
+				</Modal>	
             </div>
 		)
 	}
@@ -244,7 +403,11 @@ export class UsrCheck extends React.Component {
                 );
             }
         }
-        let warn = !this.state.dangerMode ? (<Alert bsStyle="warning" >警告：审查者的权限水平相当高，在默认情况下请不要随意给予用户审查者权限<Button onClick={()=>this.setState({dangerMode:true})}  bsStyle="danger" bsSize="xsmall">开启</Button></Alert>):(<Alert bsStyle="danger">警告：您现在开启了赋予危险权限的模式<Button bsStyle="primary" bsSize="xsmall" onClick={()=>this.setState({dangerMode:false})}>关闭</Button></Alert>);
+        let warn = !this.state.dangerMode ? (
+			<Alert bsStyle="warning" >警告：审查者的权限水平相当高，在默认情况下请不要随意给予用户审查者权限<Button onClick={()=>this.setState({dangerMode:true})}  bsStyle="danger" bsSize="xsmall">开启</Button></Alert>
+		):(
+			<Alert bsStyle="danger">警告：您现在开启了赋予危险权限的模式<Button bsStyle="primary" bsSize="xsmall" onClick={()=>this.setState({dangerMode:false})}>关闭</Button></Alert>
+		);
 		return(
             <div>
 				<h3>用户申请</h3>
@@ -272,10 +435,72 @@ export class UsrCheck extends React.Component {
 export class EndCheck extends React.Component {
     constructor(props) {
         super(props);
+		// 1 代表创建分类， 3 代表答辩分类
+		this.state = {
+			mode: 1
+		}
+    }
+	initData(){
+		// 获取相关数据
+        fetchData('checkUList',{data:[this.state.page]})
+            .then(json, (e) => {
+                return Promise.reject(new Error(e));
+            })
+            .then((data) => {
+				this.setState({
+					list:data.list,
+                    total:data.total,
+					page:data.page
+				});
+			})
+			.catch(function(error){
+				console.warn(error);
+			});
+	}
+	handleSelect(eventKey) {
+		// hashHistory.push(`/project/list/${eventKey}`);
+		// this.initData(eventKey);
+        this.setState({
+            page: eventKey,
+        });
+        this.initData();
     }
 	render(){
+		let rows = [];
+        let list;
+        if(this.state.list){
+            list = this.state.list;
+            for(let i = 0 ;i < list.length ; i++){
+                rows.push(	
+                    <tr key={"user-list-" + i.toString()}>
+                        <td>{list[i].name}</td>
+                        <td>{list[i].pid}</td>
+                        <td>
+                            <Button bsStyle="primary">查看</Button>
+                            <Button bsStyle="primary" onClick={()=>this.checkData(list[i].sid,true)}>通过</Button>
+                            <Button bsStyle="danger" onClick={()=>this.checkData(list[i].sid,false)}>不通过</Button>
+                        </td>
+                    </tr>
+                );
+            }
+        }
 		return(
             <div>
+				<h3>结题审批</h3>
+				<hr/>
+                <Table>
+					<thead>
+						<tr>
+							<th>名字</th>
+							<th>id</th>
+							<th>操作</th>
+						</tr>
+					</thead>
+					<tbody>
+						{rows}
+					</tbody>
+				</Table>
+                <Pagination bsSize="small" items={Math.ceil(this.state.total / 5)} maxButtons={5} activePage={this.state.page} onSelect={this.handleSelect.bind(this)} />
             </div>
 		)
 	}

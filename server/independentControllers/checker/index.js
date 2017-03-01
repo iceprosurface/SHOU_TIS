@@ -106,7 +106,22 @@ exports.user = {
             });
 	}
 }
+exports.downloadP = {
+	method: 'get',
+	path: '/check/project/:_id/download',
+	fn: function (req, res, next) {
+		pj.project.findOne({
+			_id: ObjectId(req.params._id),
+			haveFile: true
+		}, "file").exec(function (err, progressSingle) {
+			if (err) console.log(err);
+			res.set('Content-Type', 'Content-type: application/binary');
+			res.set('Content-disposition', 'attachment; filename=download.rar');
+			res.send(progressSingle.file);
+		});
 
+	}
+}
 exports.plist = {
     method: 'get',
     path: '/check/project/page/:page/type/:type',
@@ -114,8 +129,8 @@ exports.plist = {
 		var result = {};
         // 保证page是一个整数
         var page = parseInt(req.params.page) ? parseInt(req.params.page) - 1 : 0;
-		if([PROJECT_STATUS.BEGIN_LOCK,PROJECT_STATUS.ON_PROCESS,PROJECT_STATUS.PROCESS_LOCK,PROJECT_STATUS.REPLY_LOCK].indexOf(req.params.type) == -1){
-			req.status(403).send("params error");
+		if([PROJECT_STATUS.BEGIN_LOCK,PROJECT_STATUS.ON_PROCESS,PROJECT_STATUS.PROCESS_LOCK,PROJECT_STATUS.REPLY_LOCK].indexOf(parseInt(req.params.type)) == -1){
+			res.status(403).send("params error");
 			return;
 		}
         // 利用session查询
@@ -124,7 +139,7 @@ exports.plist = {
 		}, function (err, total) {
 			pj.project.find({
 	            nowStatus: req.params.type
-			}, "name information createTime endTime staffs adminUsrChief adminUsr pid", {
+			}, "name information createTime nowStatus pid", {
 				skip: page * 5,
 				limit: 5
 			}).sort({createTime: "desc"}).exec(function(err, projectList) {
@@ -144,9 +159,31 @@ exports.plist = {
 		});
 	}
 };
-
+exports.pSingle = {
+    method: 'get',
+    path: '/check/project/:pid',
+    fn: function(req, res, next) {
+		var result = {};
+        // 利用session查询
+			pj.project.findOne({
+	            	pid: req.params.pid
+				}, "name information createTime nowStatus pid haveFile"
+				).exec(function(err, projectSingle) {
+					if (!err) {
+						result.list = projectSingle;
+						result.status = 200;
+						result.response = "find lists";
+						//要在收到回执后在返回result
+						res.send(result);
+					} else {
+						// 出现错误的处理
+						res.status(502).send('may have a server error');
+					}
+				});
+	}
+};
 exports.project = {
-	method: 'post',
+	method: 'put',
 	path: '/check/project/:pid',
 	fn: function(req,res,next){
 		// clearNullObj function将会去除所有的null或者undefined或者其他的注入false等判断为非的元素
@@ -156,22 +193,21 @@ exports.project = {
 				.exec(function(err, project) {
 					if (!err) {
 						var result = req.body.result;
-						switch(project.nowStatus ){
-							case PROJECT_STATUS.BEGIN:
-								project.nowStatus = req.body.result?PROJECT_STATUS.REPLY_LOCK:PROJECT_STATUS.BEGIN_FAIL;
+						switch( project.nowStatus ){
+							case PROJECT_STATUS.BEGIN_LOCK:
+								project.nowStatus = req.body.result == "true"?PROJECT_STATUS.REPLY_LOCK:PROJECT_STATUS.BEGIN_FAIL;
 								break;
 							case PROJECT_STATUS.REPLY_LOCK:
-								project.nowStatus = req.body.result?PROJECT_STATUS.ON_PROCESS:PROJECT_STATUS.REPLY_FAIL;
+								project.nowStatus = req.body.result == "true"?PROJECT_STATUS.ON_PROCESS:PROJECT_STATUS.REPLY_FAIL;
 								break;
 							case PROJECT_STATUS.PROCESS_LOCK:
-								project.nowStatus = req.body.result?PROJECT_STATUS.PROCESS_END:PROJECT_STATUS.ON_PROCESS;
+								project.nowStatus = req.body.result == "true"?PROJECT_STATUS.PROCESS_END:PROJECT_STATUS.ON_PROCESS;
 								break;
 						}
 						project.save(function(err){
 							if (!err) {
-								result.status = 200;
 								//要在收到回执后在返回result
-								res.send(result);
+								res.send("success");
 							} else {
 								res.status(502).send('may have a server error when save');
 							}		

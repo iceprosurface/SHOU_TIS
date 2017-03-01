@@ -165,7 +165,10 @@ exports.create = {
         }
 		if(req.file){
 			projectObj["file"] = req.file.buffer;
-		}
+            projectObj.haveFile = true;
+		}else{
+            projectObj.haveFile = false;
+        }
         // 创建一个新的项目
         var newPj = new pj.project(projectObj);
         var result = {};
