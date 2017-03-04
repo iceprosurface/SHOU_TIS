@@ -38,8 +38,6 @@ jspm_packages
 
 # dest 目录输出
 
-dest
-
 #vscode
 
 launch.json
