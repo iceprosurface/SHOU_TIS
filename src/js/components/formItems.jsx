@@ -73,7 +73,7 @@ export class Select extends React.Component {
 		let row = [];
 		for(let i in datas){
 			row.push(
-					<option key={i} value={datas[i]}>{datas[i]}</option>
+					<option key={i} value={i}>{datas[i]}</option>
 			)
 		}
 		return (
@@ -82,7 +82,7 @@ export class Select extends React.Component {
 					{this.props.label}
 				</Col>
 				<Col sm={10}>
-					<FormControl componentClass="select" placeholder={this.props.label}>
+					<FormControl componentClass="select" name={this.props.name} placeholder={this.props.label}>
 						{row}
 					</FormControl>
 				</Col>

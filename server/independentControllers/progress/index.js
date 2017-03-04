@@ -74,7 +74,6 @@ exports.create = {
 	method: 'post',
 	path: '/progress/project/:pid',
 	fn: function (req, res, next) {
-		console.log("this is progress")
 		if( !(req.body.name && req.body.info && req.body.type) ){
 			res.status(403).send({status:403,response:"incorrect input"})
 			return;
