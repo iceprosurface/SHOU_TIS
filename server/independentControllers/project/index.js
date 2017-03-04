@@ -150,6 +150,7 @@ exports.create = {
 			return;
 		}
         // 创建者
+		console.log(req.session.logined);
         var mine = new pj.staff({
             name: req.session.logined.usrname,
             age: req.session.logined.age,
@@ -169,6 +170,7 @@ exports.create = {
 		}else{
             projectObj.haveFile = false;
         }
+
         // 创建一个新的项目
         var newPj = new pj.project(projectObj);
         var result = {};
