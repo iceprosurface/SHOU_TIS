@@ -31,7 +31,7 @@ import {
     Alert,
 	wellStyles,
     Pagination
-} from "react-Bootstrap"
+} from "react-bootstrap"
 import {
     Input,
     Textarea,

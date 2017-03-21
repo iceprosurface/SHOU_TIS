@@ -9,7 +9,7 @@ import {
     ModalHeader,
     ModalTitle,
     ModalFooter,
-} from 'react-Bootstrap';
+} from 'react-bootstrap';
 
 // 导入监听者组件-用于响应事件的发生以回流state状态更新
 import {

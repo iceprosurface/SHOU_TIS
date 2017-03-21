@@ -18,7 +18,7 @@ import {
 	ModalHeader,
 	ModalTitle,
 	ModalFooter
-} from 'react-Bootstrap';
+} from 'react-bootstrap';
 import {
 	TableParser
 } from '../components/TableParser.jsx';

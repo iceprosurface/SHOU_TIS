@@ -22,7 +22,7 @@ import {
 	ModalHeader,
 	ModalTitle,
 	ModalFooter,
-} from "react-Bootstrap"
+} from "react-bootstrap"
 import {
 	Input,
 	Textarea,

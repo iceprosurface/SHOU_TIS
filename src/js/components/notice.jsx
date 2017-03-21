@@ -13,7 +13,7 @@ import {
     Row,
     ListGroupItem,
     ListGroup,
-} from 'react-Bootstrap';
+} from 'react-bootstrap';
 
 import {
     fetchData

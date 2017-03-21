@@ -30,7 +30,7 @@ import {
 	Grid,
 	PageHeader,
 	small,
-} from "react-Bootstrap";
+} from "react-bootstrap";
 // 导入自己写的相关组件
 import Login from "./components/login.jsx"
 

@@ -16,7 +16,7 @@ import {
     FormGroup,
     FormControl,
     ControlLabel
-} from "react-Bootstrap"
+} from "react-bootstrap"
 /*
  * this is a input component for table parser 
  * @prop required

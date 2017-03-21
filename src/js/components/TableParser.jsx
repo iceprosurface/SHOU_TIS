@@ -11,7 +11,7 @@ import {
 import {
     Form,
 	Button
-} from 'react-Bootstrap';
+} from 'react-bootstrap';
 
 export class TableParser extends React.Component {
     constructor(props) {
