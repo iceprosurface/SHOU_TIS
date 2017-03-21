@@ -1800,6 +1800,24 @@ var EndCheck = exports.EndCheck = function (_React$Component5) {
 			});
 		}
 	}, {
+		key: 'checkData',
+		value: function checkData(number, bool) {
+			var _this17 = this;
+
+			var form = new FormData();
+			form.append("result", bool);
+			(0, _ajax.fetchData)('checkerProject', {
+				data: [number],
+				body: form
+			}).then(_fetchUtil.json, function (e) {
+				return Promise.reject(new Error(e));
+			}).then(function (data) {
+				_this17.initData();
+			}).catch(function (error) {
+				console.warn(error);
+			});
+		}
+	}, {
 		key: 'handleSelect',
 		value: function handleSelect(eventKey) {
 			// hashHistory.push(`/project/list/${eventKey}`);
@@ -1812,7 +1830,7 @@ var EndCheck = exports.EndCheck = function (_React$Component5) {
 	}, {
 		key: 'render',
 		value: function render() {
-			var _this17 = this;
+			var _this18 = this;
 
 			var rows = [];
 			var list = void 0;
@@ -1839,14 +1857,14 @@ var EndCheck = exports.EndCheck = function (_React$Component5) {
 							_react2.default.createElement(
 								_reactBootstrap.Button,
 								{ bsStyle: 'primary', onClick: function onClick() {
-										return _this17.checkData(list[i].sid, true);
+										return _this18.checkData(list[i].pid, true);
 									} },
 								'通过'
 							),
 							_react2.default.createElement(
 								_reactBootstrap.Button,
 								{ bsStyle: 'danger', onClick: function onClick() {
-										return _this17.checkData(list[i].sid, false);
+										return _this18.checkData(list[i].pid, false);
 									} },
 								'不通过'
 							)
@@ -1918,33 +1936,33 @@ var MidCheck = exports.MidCheck = function (_React$Component6) {
 	function MidCheck(props) {
 		_classCallCheck(this, MidCheck);
 
-		var _this18 = _possibleConstructorReturn(this, Object.getPrototypeOf(MidCheck).call(this, props));
+		var _this19 = _possibleConstructorReturn(this, Object.getPrototypeOf(MidCheck).call(this, props));
 
-		_this18.state = {
+		_this19.state = {
 			pid: "",
 			none: false,
 			noProcess: false,
 			fail: false,
 			detailDisplay: false
 		};
-		return _this18;
+		return _this19;
 	}
 
 	_createClass(MidCheck, [{
 		key: 'findProgress',
 		value: function findProgress() {
-			var _this19 = this;
+			var _this20 = this;
 
 			return (0, _ajax.fetchData)('findProgress', {
 				data: [this.state.pid]
 			}).then(_fetchUtil.json, function (e) {
-				_this19.setState({
+				_this20.setState({
 					noProcess: true
 				});
 				return Promise.reject(new Error(e));
 			}).then(function (data) {
 				// debugger;
-				_this19.setState({
+				_this20.setState({
 					list: data.list,
 					detailDisplay: true
 				});
@@ -1955,7 +1973,7 @@ var MidCheck = exports.MidCheck = function (_React$Component6) {
 	}, {
 		key: 'find',
 		value: function find() {
-			var _this20 = this;
+			var _this21 = this;
 
 			this.setState({
 				none: false,
@@ -1968,7 +1986,7 @@ var MidCheck = exports.MidCheck = function (_React$Component6) {
 			(0, _ajax.fetchData)('checkerProjectExist', {
 				data: [this.state.pid]
 			}).then(_fetchUtil.json, function (e) {
-				_this20.setState({
+				_this21.setState({
 					none: true
 				});
 				return Promise.reject(new Error(e));
@@ -1979,7 +1997,7 @@ var MidCheck = exports.MidCheck = function (_React$Component6) {
 	}, {
 		key: 'checkData',
 		value: function checkData(sid) {
-			var _this21 = this;
+			var _this22 = this;
 
 			(0, _ajax.fetchData)('checkerMid', {
 				data: [sid]
@@ -1987,7 +2005,7 @@ var MidCheck = exports.MidCheck = function (_React$Component6) {
 				return Promise.reject(new Error(e));
 			}).then(function (data) {
 				if (data.response == "fail") {
-					_this21.setState({
+					_this22.setState({
 						fail: true
 					});
 				}
@@ -1998,7 +2016,7 @@ var MidCheck = exports.MidCheck = function (_React$Component6) {
 	}, {
 		key: 'lookProgress',
 		value: function lookProgress(pid) {
-			var _this22 = this;
+			var _this23 = this;
 
 			(0, _ajax.fetchData)('findProgressSingle', {
 				data: [pid]
@@ -2006,11 +2024,11 @@ var MidCheck = exports.MidCheck = function (_React$Component6) {
 				return Promise.reject(new Error(e));
 			}).then(function (data) {
 				if (data.response == "fail") {
-					_this22.setState({
+					_this23.setState({
 						fail: true
 					});
 				} else {
-					_this22.setState({
+					_this23.setState({
 						show: true,
 						single: data.list
 					});
@@ -2022,7 +2040,7 @@ var MidCheck = exports.MidCheck = function (_React$Component6) {
 	}, {
 		key: 'render',
 		value: function render() {
-			var _this23 = this;
+			var _this24 = this;
 
 			var rows = [];
 			var list = void 0;
@@ -2078,6 +2096,7 @@ var MidCheck = exports.MidCheck = function (_React$Component6) {
 					)
 				)
 			) : "";
+
 			var fail = this.state.fail ? _react2.default.createElement(
 				_reactBootstrap.Alert,
 				null,
@@ -2087,40 +2106,58 @@ var MidCheck = exports.MidCheck = function (_React$Component6) {
 				'div',
 				null,
 				_react2.default.createElement(
-					_reactBootstrap.Table,
+					'div',
 					null,
 					_react2.default.createElement(
-						'thead',
+						_reactBootstrap.Alert,
+						{ bsStyle: 'info' },
+						'你可以选择关停项目',
+						_react2.default.createElement(
+							_reactBootstrap.Button,
+							{ bsStyle: 'danger', onClick: this.checkData.bind(this, this.state.pid) },
+							'不通过中期检查'
+						)
+					)
+				),
+				_react2.default.createElement(
+					'div',
+					null,
+					_react2.default.createElement(
+						_reactBootstrap.Table,
 						null,
 						_react2.default.createElement(
-							'tr',
+							'thead',
 							null,
 							_react2.default.createElement(
-								'th',
+								'tr',
 								null,
-								'名字'
-							),
-							_react2.default.createElement(
-								'th',
-								null,
-								'id'
-							),
-							_react2.default.createElement(
-								'th',
-								null,
-								'创建时间'
-							),
-							_react2.default.createElement(
-								'th',
-								null,
-								'操作'
+								_react2.default.createElement(
+									'th',
+									null,
+									'名字'
+								),
+								_react2.default.createElement(
+									'th',
+									null,
+									'id'
+								),
+								_react2.default.createElement(
+									'th',
+									null,
+									'创建时间'
+								),
+								_react2.default.createElement(
+									'th',
+									null,
+									'操作'
+								)
 							)
+						),
+						_react2.default.createElement(
+							'tbody',
+							null,
+							rows
 						)
-					),
-					_react2.default.createElement(
-						'tbody',
-						null,
-						rows
 					)
 				)
 			) : "";
@@ -2145,7 +2182,7 @@ var MidCheck = exports.MidCheck = function (_React$Component6) {
 						_reactBootstrap.Col,
 						{ xs: 9 },
 						_react2.default.createElement(_reactBootstrap.FormControl, { onChange: function onChange(e) {
-								_this23.setState({ pid: e.target.value });
+								_this24.setState({ pid: e.target.value });
 							}, className: 'primary' })
 					),
 					_react2.default.createElement(
@@ -2166,7 +2203,7 @@ var MidCheck = exports.MidCheck = function (_React$Component6) {
 				_react2.default.createElement(
 					_reactBootstrap.Modal,
 					{ show: this.state.show, onHide: function onHide() {
-							return _this23.setState({ show: false });
+							return _this24.setState({ show: false });
 						}, container: this, 'aria-labelledby': 'contained-modal-title' },
 					_react2.default.createElement(
 						_reactBootstrap.Modal.Header,
@@ -2260,7 +2297,7 @@ var MidCheck = exports.MidCheck = function (_React$Component6) {
 										_react2.default.createElement(
 											_reactBootstrap.Button,
 											{ onClick: function onClick() {
-													return window.location = "/checker/progress/" + _this23.state._id;
+													return window.location = "/checker/progress/" + _this24.state.single._id;
 												}, bsStyle: 'primary', disabled: !this.state.single.haveFiles },
 											'下载'
 										)
@@ -2275,7 +2312,7 @@ var MidCheck = exports.MidCheck = function (_React$Component6) {
 						_react2.default.createElement(
 							_reactBootstrap.Button,
 							{ onClick: function onClick() {
-									return _this23.setState({ show: false });
+									return _this24.setState({ show: false });
 								} },
 							'Close'
 						)
@@ -2294,28 +2331,28 @@ var processEnd = exports.processEnd = function (_React$Component7) {
 	function processEnd(props) {
 		_classCallCheck(this, processEnd);
 
-		var _this24 = _possibleConstructorReturn(this, Object.getPrototypeOf(processEnd).call(this, props));
+		var _this25 = _possibleConstructorReturn(this, Object.getPrototypeOf(processEnd).call(this, props));
 
-		_this24.state = {
+		_this25.state = {
 			page: 0,
 			detail: false,
 			details: {}
 		};
-		_this24.initData();
-		return _this24;
+		_this25.initData();
+		return _this25;
 	}
 
 	_createClass(processEnd, [{
 		key: 'lookProject',
 		value: function lookProject(sid) {
-			var _this25 = this;
+			var _this26 = this;
 
 			(0, _ajax.fetchData)('checkerProjectSingle', {
 				data: [sid]
 			}).then(_fetchUtil.json, function (e) {
 				return Promise.reject(new Error(e));
 			}).then(function (data) {
-				_this25.setState({
+				_this26.setState({
 					detail: true,
 					details: data.list
 				});
@@ -2326,7 +2363,7 @@ var processEnd = exports.processEnd = function (_React$Component7) {
 	}, {
 		key: 'initData',
 		value: function initData() {
-			var _this26 = this;
+			var _this27 = this;
 
 			// 获取相关数据
 			(0, _ajax.fetchData)('checkPList', {
@@ -2334,7 +2371,7 @@ var processEnd = exports.processEnd = function (_React$Component7) {
 			}).then(_fetchUtil.json, function (e) {
 				return Promise.reject(new Error(e));
 			}).then(function (data) {
-				_this26.setState({
+				_this27.setState({
 					list: data.list,
 					total: data.total,
 					page: data.page
@@ -2354,9 +2391,27 @@ var processEnd = exports.processEnd = function (_React$Component7) {
 			this.initData();
 		}
 	}, {
+		key: 'checkData',
+		value: function checkData(number, bool) {
+			var _this28 = this;
+
+			var form = new FormData();
+			form.append("result", bool);
+			(0, _ajax.fetchData)('checkerProject', {
+				data: [number],
+				body: form
+			}).then(_fetchUtil.json, function (e) {
+				return Promise.reject(new Error(e));
+			}).then(function (data) {
+				_this28.initData();
+			}).catch(function (error) {
+				console.warn(error);
+			});
+		}
+	}, {
 		key: 'render',
 		value: function render() {
-			var _this27 = this;
+			var _this29 = this;
 
 			var rows = [];
 			var list = void 0;
@@ -2383,14 +2438,14 @@ var processEnd = exports.processEnd = function (_React$Component7) {
 							_react2.default.createElement(
 								_reactBootstrap.Button,
 								{ bsStyle: 'primary', onClick: function onClick() {
-										return _this27.checkData(list[i].sid, true);
+										return _this29.checkData(list[i].pid, true);
 									} },
 								'通过'
 							),
 							_react2.default.createElement(
 								_reactBootstrap.Button,
 								{ bsStyle: 'danger', onClick: function onClick() {
-										return _this27.checkData(list[i].sid, false);
+										return _this29.checkData(list[i].pid, false);
 									} },
 								'不通过'
 							)
@@ -5479,6 +5534,28 @@ var NotLogin = _react2.default.createClass({
 		);
 	}
 });
+/*const Test = React.createClass({
+
+	submits(){
+		
+        var form = new FormData(this.refs.forms);
+		fetch("/file/upload", {method:"POST",body:form}).then(function(){
+		}).catch(function(e){
+			console.lod(e);
+		});
+	},
+	render() {
+		return(
+			<div>
+				<form ref="forms" method="post" enctype="multipart/form-data">
+					<input type="file" name="upload"/>
+				</form>
+				<button onClick={this.submits.bind(this)}>提交</button>
+			</div>
+		)
+	}
+});*/
+
 (0, _reactDom.render)(_react2.default.createElement(
 	_reactRouter.Router,
 	{ history: _reactRouter.hashHistory },

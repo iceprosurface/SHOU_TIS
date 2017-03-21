@@ -482,6 +482,23 @@ export class EndCheck extends React.Component {
 				console.warn(error);
 			});
 	}
+	checkData(number,bool){
+		var form = new FormData();
+		form.append("result",bool);
+		fetchData('checkerProject',{
+			data:[number],
+			body:form
+		})
+            .then(json, (e) => {
+                return Promise.reject(new Error(e));
+            })
+            .then((data) => {
+				this.initData();
+			})
+			.catch(function(error){
+				console.warn(error);
+			});
+	}
 	handleSelect(eventKey) {
 		// hashHistory.push(`/project/list/${eventKey}`);
 		// this.initData(eventKey);
@@ -502,8 +519,8 @@ export class EndCheck extends React.Component {
                         <td>{list[i].pid}</td>
                         <td>
                             {/*<Button bsStyle="primary">查看</Button>*/}
-                            <Button bsStyle="primary" onClick={()=>this.checkData(list[i].sid,true)}>通过</Button>
-                            <Button bsStyle="danger" onClick={()=>this.checkData(list[i].sid,false)}>不通过</Button>
+                            <Button bsStyle="primary" onClick={()=>this.checkData(list[i].pid,true)}>通过</Button>
+                            <Button bsStyle="danger" onClick={()=>this.checkData(list[i].pid,false)}>不通过</Button>
                         </td>
                     </tr>
                 );
@@ -653,10 +670,15 @@ export class MidCheck extends React.Component {
 				<Alert bsStyle="danger">没有查询到项目进度<Button bsStyle="danger" onClick={this.checkData.bind(this,this.state.pid)}>不通过中期检查</Button></Alert>
 			</div>
 		):"";
+
 		let fail = this.state.fail ? (
 			<Alert>你不能对一个已经完成或者处于监控状态的项目作出修改</Alert>
 		):"";
 		let details = this.state.detailDisplay ? (
+			<div>
+				<div>
+					<Alert bsStyle="info">你可以选择关停项目<Button bsStyle="danger" onClick={this.checkData.bind(this,this.state.pid)}>不通过中期检查</Button></Alert>
+				</div>
 				<div>
 					<Table>
 						<thead>
@@ -672,6 +694,7 @@ export class MidCheck extends React.Component {
 						</tbody>
 					</Table>
 				</div>
+			</div>
 		):"";
 		return(
             <div>
@@ -711,7 +734,7 @@ export class MidCheck extends React.Component {
 							</tr>
 							<tr>
 								<td>文件</td>
-								<td><Button onClick={()=>window.location="/checker/progress/"+this.state._id} bsStyle="primary" disabled={!this.state.single.haveFiles}>下载</Button></td>
+								<td><Button onClick={()=>window.location="/checker/progress/"+this.state.single._id} bsStyle="primary" disabled={!this.state.single.haveFiles}>下载</Button></td>
 							</tr>
 						</tbody>
 					</Table>):""}
@@ -779,6 +802,23 @@ export class processEnd extends React.Component {
         });
         this.initData();
     }
+	checkData(number,bool){
+		var form = new FormData();
+		form.append("result",bool);
+		fetchData('checkerProject',{
+			data:[number],
+			body:form
+		})
+            .then(json, (e) => {
+                return Promise.reject(new Error(e));
+            })
+            .then((data) => {
+				this.initData();
+			})
+			.catch(function(error){
+				console.warn(error);
+			});
+	}
 	render(){
 		let rows = [];
         let list;
@@ -791,8 +831,8 @@ export class processEnd extends React.Component {
                         <td>{list[i].pid}</td>
                         <td>
                             {/*<Button bsStyle="primary">查看</Button>*/}
-                            <Button bsStyle="primary" onClick={()=>this.checkData(list[i].sid,true)}>通过</Button>
-                            <Button bsStyle="danger" onClick={()=>this.checkData(list[i].sid,false)}>不通过</Button>
+                            <Button bsStyle="primary" onClick={()=>this.checkData(list[i].pid,true)}>通过</Button>
+                            <Button bsStyle="danger" onClick={()=>this.checkData(list[i].pid,false)}>不通过</Button>
                         </td>
                     </tr>
                 );

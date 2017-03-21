@@ -212,6 +212,7 @@ exports.progress = {
 	fn: function(req,res,next){
 		progress.fn.find({
             	from: req.params.pid,
+            	type: TYPE.MID_TERM,
 			}, "name info createTime haveFiles", {
 				limit: 5
 			})

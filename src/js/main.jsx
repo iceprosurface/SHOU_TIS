@@ -329,7 +329,7 @@ const NotLogin = React.createClass({
 		)
 	}
 })
-const Test = React.createClass({
+/*const Test = React.createClass({
 
 	submits(){
 		
@@ -349,7 +349,7 @@ const Test = React.createClass({
 			</div>
 		)
 	}
-});
+});*/
 
 render((
 	<Router history={hashHistory}>
