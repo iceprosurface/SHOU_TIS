@@ -482,6 +482,7 @@ export class EndCheck extends React.Component {
 				console.warn(error);
 			});
 	}
+
 	checkData(number,bool){
 		var form = new FormData();
 		form.append("result",bool);
