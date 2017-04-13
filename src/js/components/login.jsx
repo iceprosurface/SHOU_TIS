@@ -17,7 +17,7 @@ import {
 
     Overlay,
     Alert
-} from "react-Bootstrap"
+} from "react-bootstrap"
 import {
     Register
 } from '../components/register.jsx'

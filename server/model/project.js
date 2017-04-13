@@ -11,7 +11,8 @@ const PROJECT_STATUS = exports.PROJECT_STATUS = {
 	PROCESS_LOCK: 6,
 	PROCESS_END: 7,
 	MID_TERM_FAIL: 8,
-	END_TERM: 9
+	END_TERM: 9,
+	FINAL: 10
 }
     // staff 只是保存数据使用,只有主要管理员和普通管理员两者可以对项目作出操作，主要管理员的权限设置将会比普通的更高
 var staffSchema = new mongoose.Schema({

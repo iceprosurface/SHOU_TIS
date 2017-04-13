@@ -30,7 +30,7 @@ import {
 	Grid,
 	PageHeader,
 	small,
-} from "react-Bootstrap";
+} from "react-bootstrap";
 // 导入自己写的相关组件
 import Login from "./components/login.jsx"
 
@@ -95,6 +95,7 @@ import {
 	UsrCheck,
 	MidCheck,
 	EndCheck,
+	processEnd
 } from './components/checker.jsx'
 // pre-defined params use
 updateData();
@@ -206,10 +207,10 @@ const App = React.createClass({
 							<MenuItem eventKey={2.2} href="#/project/list/1">科研项目预览</MenuItem>
 						</NavDropdown>
 						<NavDropdown eventKey={3} title="切换模式" id="basic-nav-dropdown">
-							<MenuItem eventKey={3.1} href="#/checker/login">审查者模式</MenuItem>
-							<MenuItem eventKey={3.2} href="#/admin/login">浏览模式</MenuItem>
+							<MenuItem eventKey={3.1} href="#/checker/logined">审查者模式</MenuItem>
+							<MenuItem eventKey={3.2} href="#/admin/logined">浏览模式</MenuItem>
 							<MenuItem divider />
-							<MenuItem eventKey={3.3} href="#/admin/login">管理者模式</MenuItem>
+							<MenuItem eventKey={3.3} href="#/admin/logined">管理者模式</MenuItem>
 						</NavDropdown>
 					</Nav>
 					<Nav pullRight>
@@ -328,7 +329,7 @@ const NotLogin = React.createClass({
 		)
 	}
 })
-const Test = React.createClass({
+/*const Test = React.createClass({
 
 	submits(){
 		
@@ -348,7 +349,7 @@ const Test = React.createClass({
 			</div>
 		)
 	}
-});
+});*/
 
 render((
 	<Router history={hashHistory}>
@@ -360,6 +361,7 @@ render((
 				<Router path="usr" component={UsrCheck} />
 				<Router path="mid" component={MidCheck} />
 				<Router path="end" component={EndCheck} />
+				<Router path="processEnd" component={processEnd} />
 			</Router>
 		</Router>
 		<Router path="/admin" component={Admin}>

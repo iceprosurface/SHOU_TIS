@@ -18,7 +18,7 @@ import {
 	ModalHeader,
 	ModalTitle,
 	ModalFooter
-} from 'react-Bootstrap';
+} from 'react-bootstrap';
 import {
 	TableParser
 } from '../components/TableParser.jsx';
@@ -398,7 +398,7 @@ export class ProjectList extends React.Component {
 	}
 	calculatedStatus(status){
 		if(status!==0 && status !== "0" && !status) return "项目状态未知";
-		return ["创建阶段","创建审核阶段","创建审核失败","答辩阶段","答辩失败","进行中","终止审核","终止阶段","中期检查未通过","项目结题中"][status];
+		return ["创建阶段","创建审核阶段","创建审核失败","答辩阶段","答辩失败","进行中","终止审核","终止阶段","中期检查未通过","项目结题中","项目结束"][status];
 	}
 	handleSelect(eventKey) {
 		hashHistory.push(`/project/list/${eventKey}`);

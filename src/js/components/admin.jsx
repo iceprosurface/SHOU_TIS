@@ -30,7 +30,7 @@ import {
     Glyphicon,
     Alert,
 	wellStyles,
-} from "react-Bootstrap"
+} from "react-bootstrap"
 import {
     Input,
     Textarea,

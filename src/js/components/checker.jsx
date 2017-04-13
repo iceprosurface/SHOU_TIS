@@ -31,7 +31,7 @@ import {
     Alert,
 	wellStyles,
     Pagination
-} from "react-Bootstrap"
+} from "react-bootstrap"
 import {
     Input,
     Textarea,
@@ -112,6 +112,7 @@ export class CheckerLogin extends React.Component {
 			)
 	}
 }
+
 export class CheckerLogined extends React.Component {
     constructor(props) {
         super(props);
@@ -159,7 +160,7 @@ export class CheckerLogined extends React.Component {
 }
 
 export class ProjectCheck extends React.Component {
-        constructor(props) {
+	constructor(props) {
         super(props);
 		// 1 代表创建分类， 3 代表答辩分类
 		this.state = {
@@ -316,7 +317,7 @@ export class ProjectCheck extends React.Component {
 					</tbody>
 				</Table>
                 <Pagination bsSize="small" items={Math.ceil(this.state.total / 5)} maxButtons={5} activePage={this.state.page} onSelect={this.handleSelect.bind(this)} />
-								<Modal show={this.state.detail} onHide={close} container={this} aria-labelledby="contained-modal-title" >
+				<Modal show={this.state.detail} onHide={close} container={this} aria-labelledby="contained-modal-title" >
 					<Modal.Header closeButton>
 						<Modal.Title id="contained-modal-title">详细信息</Modal.Title>
 					</Modal.Header>
@@ -433,16 +434,40 @@ export class UsrCheck extends React.Component {
 }
 
 export class EndCheck extends React.Component {
-    constructor(props) {
+	constructor(props) {
         super(props);
 		// 1 代表创建分类， 3 代表答辩分类
 		this.state = {
-			mode: 1
+			mode: 1,
+			page:0,
+			total:0,
+			detail: false,
+			details: {}
 		}
+		this.initData();
     }
+	lookProject(sid){
+		fetchData('checkerProjectSingle',{
+			data:[sid]
+		})
+		.then(json, (e) => {
+                return Promise.reject(new Error(e));
+            })
+            .then((data) => {
+				this.setState({
+					detail: true,
+					details: data.list
+				});
+			})
+			.catch(function(error){
+				console.warn(error);
+			});
+	}
 	initData(){
 		// 获取相关数据
-        fetchData('checkUList',{data:[this.state.page]})
+        fetchData('checkPList',{
+			data:[this.state.page,9]
+		})
             .then(json, (e) => {
                 return Promise.reject(new Error(e));
             })
@@ -452,6 +477,24 @@ export class EndCheck extends React.Component {
                     total:data.total,
 					page:data.page
 				});
+			})
+			.catch(function(error){
+				console.warn(error);
+			});
+	}
+
+	checkData(number,bool){
+		var form = new FormData();
+		form.append("result",bool);
+		fetchData('checkerProject',{
+			data:[number],
+			body:form
+		})
+            .then(json, (e) => {
+                return Promise.reject(new Error(e));
+            })
+            .then((data) => {
+				this.initData();
 			})
 			.catch(function(error){
 				console.warn(error);
@@ -476,9 +519,9 @@ export class EndCheck extends React.Component {
                         <td>{list[i].name}</td>
                         <td>{list[i].pid}</td>
                         <td>
-                            <Button bsStyle="primary">查看</Button>
-                            <Button bsStyle="primary" onClick={()=>this.checkData(list[i].sid,true)}>通过</Button>
-                            <Button bsStyle="danger" onClick={()=>this.checkData(list[i].sid,false)}>不通过</Button>
+                            {/*<Button bsStyle="primary">查看</Button>*/}
+                            <Button bsStyle="primary" onClick={()=>this.checkData(list[i].pid,true)}>通过</Button>
+                            <Button bsStyle="danger" onClick={()=>this.checkData(list[i].pid,false)}>不通过</Button>
                         </td>
                     </tr>
                 );
@@ -487,6 +530,7 @@ export class EndCheck extends React.Component {
 		return(
             <div>
 				<h3>结题审批</h3>
+				<Alert bsStyle="info">项目通过将会进入项目完成阶段，不通过则会选择回到进行状态。</Alert>
 				<hr/>
                 <Table>
 					<thead>
@@ -508,10 +552,311 @@ export class EndCheck extends React.Component {
 export class MidCheck extends React.Component {
     constructor(props) {
         super(props);
-    }
+		this.state = {
+			pid: "",
+			none:false,
+			noProcess:false,
+			fail: false,
+			detailDisplay: false
+		}
+	}
+	findProgress(){
+		return fetchData('findProgress',{
+			data:[this.state.pid],
+		})
+            .then(json, (e) => {
+				this.setState({
+					noProcess:true,
+				})
+                return Promise.reject(new Error(e));
+            })
+            .then((data) => {
+				// debugger;
+				this.setState({
+					list:data.list,
+					detailDisplay:true
+				});
+			})
+			.catch(function(error){
+				console.warn(error);
+			});
+	}
+	find(){
+		this.setState({
+			none:false,
+			noProcess: false,
+			detailDisplay: false,
+			fail: false,
+			show:false,
+			list: []
+		})
+		fetchData('checkerProjectExist',{
+			data:[this.state.pid],
+		})
+            .then(json, (e) => {
+				this.setState({
+					none:true
+				})
+                return Promise.reject(new Error(e));
+            })
+            .then(this.findProgress.bind(this))
+			.catch(function(error){
+				console.warn(error);
+			});
+	}
+	checkData(sid){
+		fetchData('checkerMid',{
+			data:[sid],
+		})
+		.then(json, (e) => {
+                return Promise.reject(new Error(e));
+            })
+            .then((data) => {
+				if(data.response == "fail"){
+					this.setState({
+						fail: true
+					})
+				}
+			})
+			.catch(function(error){
+				console.warn(error);
+			});
+	}
+	lookProgress(pid){
+		fetchData('findProgressSingle',{
+			data:[pid],
+		})
+		.then(json, (e) => {
+                return Promise.reject(new Error(e));
+            })
+            .then((data) => {
+				if(data.response == "fail"){
+					this.setState({
+						fail: true
+					})
+				}else{
+					this.setState({
+						show: true,
+						single: data.list
+					})
+				}
+			})
+			.catch(function(error){
+				console.warn(error);
+			});
+	}
 	render(){
+		let rows = [];
+        let list;
+        if(this.state.list){
+            list = this.state.list;
+            for(let i = 0 ;i < list.length ; i++){
+                rows.push(	
+                    <tr key={"user-list-" + i.toString()}>
+                        <td>{list[i].name}</td>
+                        <td>{list[i]._id}</td>
+                        <td>{new Date(list[i].createTime).Format("yyyy-MM-dd")}</td>
+                        <td>
+                            <Button bsStyle="primary" onClick={this.lookProgress.bind(this,list[i]._id)}>查看</Button>
+                        </td>
+                    </tr>
+                );
+            }
+        }
+		let none = this.state.none ? (
+			<Alert>查无此pid</Alert>
+		):"";
+		let noProcess = this.state.noProcess ? (
+			<div>
+				<Alert bsStyle="danger">没有查询到项目进度<Button bsStyle="danger" onClick={this.checkData.bind(this,this.state.pid)}>不通过中期检查</Button></Alert>
+			</div>
+		):"";
+
+		let fail = this.state.fail ? (
+			<Alert>你不能对一个已经完成或者处于监控状态的项目作出修改</Alert>
+		):"";
+		let details = this.state.detailDisplay ? (
+			<div>
+				<div>
+					<Alert bsStyle="info">你可以选择关停项目<Button bsStyle="danger" onClick={this.checkData.bind(this,this.state.pid)}>不通过中期检查</Button></Alert>
+				</div>
+				<div>
+					<Table>
+						<thead>
+							<tr>
+								<th>名字</th>
+								<th>id</th>
+								<th>创建时间</th>
+								<th>操作</th>
+							</tr>
+						</thead>
+						<tbody>
+							{rows}
+						</tbody>
+					</Table>
+				</div>
+			</div>
+		):"";
 		return(
-            <div>MidCheck
+            <div>
+				<h4>项目中期检查</h4>
+				<Alert bsStyle="info">项目中期检查可以选择查看项目的中期进度，如果项目进度很差，或者不提交中期检查报告，可以选择在这里关停项目</Alert>
+				<hr/>
+				<Row><Col xs={9}><FormControl onChange={(e)=>{this.setState({pid:e.target.value})}} className="primary"/></Col><Col xs={3}><Button bsStyle="primary" onClick={this.find.bind(this)}>查询进度</Button></Col></Row>
+				<hr/>
+				{none}
+				{noProcess}
+				{fail}
+				{details}
+				<Modal show={this.state.show} onHide={()=>this.setState({show:false})} container={this} aria-labelledby="contained-modal-title" >
+					<Modal.Header closeButton>
+						<Modal.Title id="contained-modal-title">详细信息</Modal.Title>
+					</Modal.Header>
+					<Modal.Body>
+					{this.state.single?(<Table>
+						<thead>
+							<tr>
+								<th>名称</th>
+								<th>值</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>操作者</td>
+								<td>{this.state.single.operator.name}</td>
+							</tr>
+							<tr>
+								<td>名称</td>
+								<td>{this.state.single.info}</td>
+							</tr>
+							<tr>
+								<td>创建时间</td>
+								<td>{new Date(this.state.single.createTime).Format("yyyy-MM-dd")}</td>
+							</tr>
+							<tr>
+								<td>文件</td>
+								<td><Button onClick={()=>window.location="/checker/progress/"+this.state.single._id} bsStyle="primary" disabled={!this.state.single.haveFiles}>下载</Button></td>
+							</tr>
+						</tbody>
+					</Table>):""}
+					</Modal.Body>
+					<Modal.Footer>
+						<Button onClick={()=>this.setState({show:false})}>Close</Button>
+					</Modal.Footer>
+				</Modal>	
+            </div>
+		)
+	}
+}
+
+export class processEnd extends React.Component {
+	constructor(props) {
+        super(props);
+		this.state = {
+			page:0,
+			detail: false,
+			details: {}
+		}
+		this.initData();
+    }
+	lookProject(sid){
+		fetchData('checkerProjectSingle',{
+			data:[sid]
+		})
+		.then(json, (e) => {
+                return Promise.reject(new Error(e));
+            })
+            .then((data) => {
+				this.setState({
+					detail: true,
+					details: data.list
+				});
+			})
+			.catch(function(error){
+				console.warn(error);
+			});
+	}
+	initData(){
+		// 获取相关数据
+        fetchData('checkPList',{
+			data:[this.state.page,6]
+		})
+            .then(json, (e) => {
+                return Promise.reject(new Error(e));
+            })
+            .then((data) => {
+				this.setState({
+					list:data.list,
+                    total:data.total,
+					page:data.page
+				});
+			})
+			.catch(function(error){
+				console.warn(error);
+			});
+	}
+	handleSelect(eventKey) {
+		// hashHistory.push(`/project/list/${eventKey}`);
+		// this.initData(eventKey);
+        this.setState({
+            page: eventKey,
+        });
+        this.initData();
+    }
+	checkData(number,bool){
+		var form = new FormData();
+		form.append("result",bool);
+		fetchData('checkerProject',{
+			data:[number],
+			body:form
+		})
+            .then(json, (e) => {
+                return Promise.reject(new Error(e));
+            })
+            .then((data) => {
+				this.initData();
+			})
+			.catch(function(error){
+				console.warn(error);
+			});
+	}
+	render(){
+		let rows = [];
+        let list;
+        if(this.state.list){
+            list = this.state.list;
+            for(let i = 0 ;i < list.length ; i++){
+                rows.push(	
+                    <tr key={"user-list-" + i.toString()}>
+                        <td>{list[i].name}</td>
+                        <td>{list[i].pid}</td>
+                        <td>
+                            {/*<Button bsStyle="primary">查看</Button>*/}
+                            <Button bsStyle="primary" onClick={()=>this.checkData(list[i].pid,true)}>通过</Button>
+                            <Button bsStyle="danger" onClick={()=>this.checkData(list[i].pid,false)}>不通过</Button>
+                        </td>
+                    </tr>
+                );
+            }
+        }
+		return(
+            <div>
+				<h3>项目终止审查</h3>
+				<Alert bsStyle="info">项目终止审查阶段,通过则加入终止阶段，不通过则回到进行阶段。</Alert>
+				<hr/>
+                <Table>
+					<thead>
+						<tr>
+							<th>名字</th>
+							<th>id</th>
+							<th>操作</th>
+						</tr>
+					</thead>
+					<tbody>
+						{rows}
+					</tbody>
+				</Table>
+                <Pagination bsSize="small" items={Math.ceil(this.state.total / 5)} maxButtons={5} activePage={this.state.page} onSelect={this.handleSelect.bind(this)} />
             </div>
 		)
 	}

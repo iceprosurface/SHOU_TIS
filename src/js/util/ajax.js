@@ -190,6 +190,21 @@ const fetchList = {
             method: 'PUT'
         }
     },
+    checkerProjectExist: {
+        url: urlTemplate `/check/project/${0}/exist`,
+    },
+    findProgress: {
+        url: urlTemplate `/check/progressList/${0}`,
+    },
+    findProgressSingle: {
+        url: urlTemplate `/check/progress/${0}`,
+    },
+    checkerMid: {
+        url: urlTemplate `/check/mid/${0}`,
+        option: {
+            method: 'PUT'
+        }
+    },
     checkerProjectSingle: {
         url: urlTemplate `/check/project/${0}`
     },  

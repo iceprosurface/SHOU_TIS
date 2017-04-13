@@ -27,7 +27,7 @@ import {
     ButtonGroup,
     Overlay,
     Alert
-} from "react-Bootstrap";
+} from "react-bootstrap";
 import {
     json
 } from "../util/fetchUtil.js"
